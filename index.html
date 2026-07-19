@@ -593,29 +593,6 @@
       }
     }
 
-    /* Back Button to Void */
-    .btn-back-void {
-      position: absolute;
-      top: 30px;
-      left: 30px;
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #888899;
-      padding: 10px 20px;
-      font-size: 0.75rem;
-      font-family: var(--font-mono);
-      cursor: pointer;
-      letter-spacing: 2px;
-      transition: all 0.3s ease;
-      z-index: 2;
-    }
-
-    .btn-back-void:hover {
-      border-color: var(--color-neon-pink);
-      color: var(--color-neon-pink);
-      box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
-    }
-
     /* Left Column Details */
     .contact-left-col {
       display: flex;
@@ -866,6 +843,77 @@
       fill: currentColor;
     }
 
+    /* --- Dissolution Screen Overlay --- */
+    .final-screen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 20;
+      background: radial-gradient(circle, rgba(15, 10, 25, 0.96) 0%, rgba(3, 3, 5, 1) 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.5s ease;
+      padding: 40px;
+    }
+
+    .final-screen-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .final-container {
+      max-width: 800px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 35px;
+      align-items: center;
+    }
+
+    .final-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--color-neon-cyan);
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+      line-height: 1.3;
+      opacity: 0;
+      transform: translateY(30px);
+      text-transform: uppercase;
+    }
+
+    .final-title span {
+      color: var(--color-neon-pink);
+      text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+    }
+
+    .final-subtitle {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #888899;
+      letter-spacing: 1px;
+      max-width: 650px;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .final-closing {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #ffffff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+      line-height: 1.4;
+      opacity: 0;
+      transform: translateY(30px);
+      margin-top: 20px;
+    }
+
     /* Perspective Hover Drift keyframes */
     @keyframes holo-float {
       0%, 100% {
@@ -893,6 +941,8 @@
       .sound-toggle { padding: 6px 12px; font-size: 0.65rem; }
       .btn-action { padding: 10px 20px; font-size: 0.7rem; }
       .modal { margin: 20px; padding: 25px; }
+      .final-title { font-size: 1.6rem; }
+      .final-closing { font-size: 1.2rem; }
     }
   </style>
 </head>
@@ -958,7 +1008,6 @@
   <div class="contact-screen-overlay" id="contact-screen-overlay">
     <div class="contact-bg-glow-cyan"></div>
     <div class="contact-bg-glow-pink"></div>
-    <button class="btn-back-void interactive" id="back-void-btn">[ RETURN TO VOID ]</button>
 
     <div class="contact-wrapper">
       
@@ -1065,6 +1114,19 @@
 
       </form>
 
+    </div>
+  </div>
+
+  <!-- Cinematic Dissolve Screen Overlay -->
+  <div class="final-screen-overlay" id="final-screen-overlay">
+    <div class="final-container">
+      <h1 class="final-title">THANKYOU <span id="final-username">VOYAGER</span> for visiting us!</h1>
+      <p class="final-subtitle">
+        we understand that you may have faced inconveniences during the VOYAGE, this is because the developer is currently burdened under a heap of problems and didn't had the time to finish the site properly, and we apologize for that!<br><br>
+        we'll reach out to you soon.<br><br>
+        till then,
+      </p>
+      <h2 class="final-closing">MAY YOU KEEP SMILING LIKE THIS, ALWAYS...!</h2>
     </div>
   </div>
 
@@ -2476,12 +2538,6 @@
       handleNoChoice();
     });
 
-    // Close contact overlay and return to standard loop
-    document.getElementById('back-void-btn').addEventListener('click', () => {
-      document.getElementById('contact-screen-overlay').classList.remove('open');
-      exitVoyageScreen();
-    });
-
     // Restore original WebGL environment and overlay styles
     function exitVoyageScreen() {
       isVoyageActive = false;
@@ -2504,6 +2560,68 @@
       gsap.to('.hud', { opacity: 1, pointerEvents: 'auto', duration: 1.0 });
     }
 
+    // Trigger form dissolution into the void
+    function playDissolveTransition(userName) {
+      // Set name details dynamically
+      document.getElementById('final-username').textContent = userName || voyagerDesignation || "Voyager";
+
+      // 1. Dissolve the Contact Screen Overlay
+      gsap.to('#contact-screen-overlay', {
+        opacity: 0,
+        scale: 0.85,
+        duration: 1.4,
+        ease: 'power3.inOut',
+        onComplete: () => {
+          document.getElementById('contact-screen-overlay').classList.remove('open');
+        }
+      });
+
+      // 2. Move Three.js camera infinitely deep into the silent void
+      gsap.to(camera.position, {
+        z: -340,
+        duration: 5.5,
+        ease: 'power2.out',
+        onUpdate: () => {
+          targetCameraZ = camera.position.z;
+        }
+      });
+
+      // 3. Disperse/Dim background particles to heighten the transition
+      gsap.to(dustMaterial, {
+        size: 0.04,
+        opacity: 0.15,
+        duration: 4.5
+      });
+
+      // 4. Activate the cinematic final message overlay
+      const finalOverlay = document.getElementById('final-screen-overlay');
+      finalOverlay.classList.add('active');
+
+      // 5. Staggered fade-in reveals for clean styling layout
+      const tl = gsap.timeline({ delay: 1.2 });
+
+      tl.to('.final-title', {
+        opacity: 1,
+        y: 0,
+        duration: 1.8,
+        ease: 'power3.out'
+      });
+
+      tl.to('.final-subtitle', {
+        opacity: 1,
+        y: 0,
+        duration: 1.8,
+        ease: 'power3.out'
+      }, '-=0.6');
+
+      tl.to('.final-closing', {
+        opacity: 1,
+        y: 0,
+        duration: 2.4,
+        ease: 'power3.out'
+      }, '-=0.3');
+    }
+
     // Wire Contact Form submissions
     document.getElementById('cyber-contact-form').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -2517,7 +2635,11 @@
       const bodyContent = `Sender: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
       const body = encodeURIComponent(bodyContent);
 
-      window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+      // Trigger mail client transmission in a new tab
+      window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, '_blank');
+        
+      // Begin cinematic final dissolution phase immediately
+      playDissolveTransition(name);
     });
 
     // --- 12. RUNTIME ANIMATION LOOP ---
