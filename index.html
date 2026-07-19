@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Room of Memories // Self-Hosted Relics</title>
+  <title>Room of Memories // Cyberpunk Guestbook</title>
   
   <!-- Monospace Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +34,7 @@
       user-select: none;
     }
 
+    /* WebGL Canvas */
     #webgl {
       position: absolute;
       top: 0;
@@ -43,6 +44,7 @@
       z-index: 1;
     }
 
+    /* Interface Layer */
     .hud {
       position: absolute;
       top: 0;
@@ -61,6 +63,7 @@
       pointer-events: auto;
     }
 
+    /* Header Styling */
     .header {
       display: flex;
       justify-content: space-between;
@@ -82,6 +85,7 @@
       letter-spacing: 1px;
     }
 
+    /* Controls */
     .sound-toggle {
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -100,6 +104,7 @@
       box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
     }
 
+    /* Center prompt */
     .scroll-prompt {
       align-self: center;
       text-align: center;
@@ -109,6 +114,7 @@
       animation: pulse 2s infinite ease-in-out;
     }
 
+    /* Bottom Section */
     .footer {
       display: flex;
       justify-content: space-between;
@@ -146,6 +152,7 @@
       right: 10px;
     }
 
+    /* Modal Styling */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -271,7 +278,7 @@
     <div class="header">
       <div class="title-group">
         <h1>ROOM_OF_MEMORIES_v5.0</h1>
-        <p>A self-hosted suspended corridor of digital relics.</p>
+        <p>A suspended sanctuary of digital relics.</p>
       </div>
       <button class="sound-toggle interactive" id="sound-btn">SOUND: OFF</button>
     </div>
@@ -282,7 +289,7 @@
 
     <div class="footer">
       <div class="title-group">
-        <p>TOTAL_RELICS // <span id="relic-count">00</span></p>
+        <p>TOTAL_RELICS // <span id="relic-count">08</span></p>
       </div>
       <button class="btn-action interactive" id="add-btn">ADD A MEMORY</button>
     </div>
@@ -305,10 +312,19 @@
   <script src="https://unpkg.com/gsap@3.12.2/dist/gsap.min.js"></script>
 
   <script>
-    // Local unique identifier for this browser session
-    const myClientId = Math.random().toString(36).substring(2, 15);
+    // --- 1. SEED MEMORIES ---
+    const presetMemories = [
+      "All those moments will be lost in time, like tears in rain.",
+      "Technology accelerates time. Emotions slow it down, transmuting it into memory.",
+      "Every ghost of a memory finds its sanctuary in the unwavering embrace of the timeless.",
+      "A vast room suspended in darkness, floating fragments of light.",
+      "I was obsessed with the sky. I still look up, hoping to find Orion on fire.",
+      "Are we humans because we think, or because we remember?",
+      "To live is to gather fragments. To code is to sew them into a universe.",
+      "The yellow neon signs whisper translations of names we used to know."
+    ];
 
-    // --- 1. WEB AUDIO SYNTH DRONE ---
+    // --- 2. WEB AUDIO SYNTH DRONE ---
     let audioCtx = null;
     let mainOsc = null;
     let filterNode = null;
@@ -319,15 +335,18 @@
       if (audioCtx) return;
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       
+      // Warm Sub Synth
       mainOsc = audioCtx.createOscillator();
       mainOsc.type = 'sawtooth';
       mainOsc.frequency.setValueAtTime(55, audioCtx.currentTime); // Low A
 
+      // Cinematic Sweep Low-Pass Filter
       filterNode = audioCtx.createBiquadFilter();
       filterNode.type = 'lowpass';
       filterNode.frequency.setValueAtTime(140, audioCtx.currentTime);
       filterNode.Q.setValueAtTime(6, audioCtx.currentTime);
 
+      // Low Frequency Oscillator to slowly morph the sound
       const lfo = audioCtx.createOscillator();
       lfo.type = 'sine';
       lfo.frequency.setValueAtTime(0.08, audioCtx.currentTime);
@@ -338,6 +357,7 @@
       lfo.connect(lfoGain);
       lfoGain.connect(filterNode.frequency);
 
+      // Volume Controller
       masterGain = audioCtx.createGain();
       masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
 
@@ -365,7 +385,7 @@
       }
     });
 
-    // --- 2. THREE.JS & WEBGL SETUP ---
+    // --- 3. THREE.JS & WEBGL SETUP ---
     const canvas = document.getElementById('webgl');
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x030305, 0.012);
@@ -381,7 +401,7 @@
     const cardsGroup = new THREE.Group();
     scene.add(cardsGroup);
 
-    // --- 3. SHADER DECLARATIONS ---
+    // --- 4. SHADER DECLARATIONS ---
     const vertexShader = `
       uniform float uTime;
       uniform float uHover;
@@ -393,17 +413,19 @@
         vUv = uv;
         vec3 pos = position;
 
+        // Cinematic idle ambient sway
         float waveX = sin(pos.y * 1.5 + uTime * 0.8) * 0.04;
         float waveY = cos(pos.x * 1.5 + uTime * 0.8) * 0.04;
         pos.x += waveX;
         pos.y += waveY;
 
+        // Hover raycaster physical deformation
         if (uHover > 0.0) {
           float dist = distance(uv, uMouseLocal);
           vDistToMouse = dist;
           float force = smoothstep(0.4, 0.0, dist) * uHover;
           pos.z += force * 0.22;
-          pos.z += sin(dist * 25.0 - uTime * 6.0) * force * 0.03;
+          pos.z += sin(dist * 25.0 - uTime * 6.0) * force * 0.03; // rippling effect
         } else {
           vDistToMouse = 999.0;
         }
@@ -423,24 +445,30 @@
       void main() {
         vec2 uv = vUv;
 
+        // Chromatic distortion overlay under cursor
         if (uHover > 0.0) {
           float distortion = smoothstep(0.4, 0.0, vDistToMouse) * uHover * 0.015;
           uv.x += sin(uv.y * 40.0 + uTime * 8.0) * distortion;
           uv.y += cos(uv.x * 40.0 + uTime * 8.0) * distortion;
         }
 
+        // Texture Sampling
         vec4 texColor = texture2D(uTexture, uv);
+
+        // Holographic Cyberpunk Scanlines
         float scanline = sin(uv.y * 150.0 + uTime * 5.0) * 0.04;
         
+        // Base color calculations
         vec3 finalGlow = uColor;
         if (uHover > 0.0) {
-          vec3 targetPink = vec3(1.0, 0.0, 0.5);
+          vec3 targetPink = vec3(1.0, 0.0, 0.5); // Pink shifts when hovered
           finalGlow = mix(uColor, targetPink, uHover * smoothstep(0.4, 0.0, vDistToMouse));
         }
 
         vec4 finalColor = texColor;
         finalColor.rgb += scanline * texColor.a;
 
+        // Vignette card bounding soft-edge fade
         float borderFade = smoothstep(0.0, 0.03, vUv.x) * smoothstep(1.0, 0.97, vUv.x) *
                            smoothstep(0.0, 0.08, vUv.y) * smoothstep(1.0, 0.92, vUv.y);
         
@@ -450,7 +478,7 @@
       }
     `;
 
-    // --- 4. TEXTURE GENERATOR ---
+    // --- 5. HIGH-RESOLUTION CANVAS TEXTURE CONSTRUCTOR ---
     function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
       const words = text.split(' ');
       let line = '';
@@ -481,37 +509,45 @@
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
 
+      // Transparent charcoal backdrop
       ctx.fillStyle = 'rgba(5, 5, 8, 0.9)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Cyberpunk grid backing
       ctx.fillStyle = 'rgba(0, 243, 255, 0.02)';
       for (let y = 0; y < canvas.height; y += 8) {
         ctx.fillRect(0, y, canvas.width, 1);
       }
 
+      // Neon cyan border
       ctx.strokeStyle = 'rgba(0, 243, 255, 0.2)';
       ctx.lineWidth = 4;
       ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
+      // Technical HUD corner lines
       ctx.strokeStyle = 'rgba(0, 243, 255, 0.7)';
       ctx.lineWidth = 2;
+      // Top-Left corner tag
       ctx.beginPath();
       ctx.moveTo(10, 50); ctx.lineTo(10, 10); ctx.lineTo(50, 10);
       ctx.stroke();
-
+      // Bottom-Right corner tag
       ctx.beginPath();
       ctx.moveTo(canvas.width - 10, canvas.height - 50); 
       ctx.lineTo(canvas.width - 10, canvas.height - 10); 
       ctx.lineTo(canvas.width - 50, canvas.height - 10);
       ctx.stroke();
 
+      // Top metadata tag
       ctx.fillStyle = 'rgba(0, 243, 255, 0.6)';
       ctx.font = '16px "JetBrains Mono", monospace';
       ctx.fillText(`[ MEM_RELIC // ID: ${Math.floor(1000 + Math.random() * 9000)} ]`, 40, 45);
 
+      // Bottom timestamp
       ctx.fillStyle = 'rgba(255, 0, 127, 0.6)';
       ctx.fillText('[ STATUS: FLOATING_IN_VOID ]', canvas.width - 320, canvas.height - 40);
 
+      // Glow configurations
       ctx.shadowColor = '#00f3ff';
       ctx.shadowBlur = 10;
       ctx.fillStyle = '#ffffff';
@@ -526,10 +562,11 @@
       return texture;
     }
 
-    // --- 5. DYNAMIC COORDINATES SYSTEMS ---
-    let firstZ = 5; 
+    // --- 6. ADD MEMORY TO SPACE ---
+    let firstZ = 5; // Track the absolute front-most coordinate
     let cardSideToggleFront = true;
 
+    // Standard static placement for initial seed cards
     function buildPresetMemoryCard(text, z) {
       const texture = generateTexture(text);
       const geometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
@@ -550,13 +587,14 @@
 
       const mesh = new THREE.Mesh(geometry, material);
       const x = (z % 26 === 5) ? -3.5 : 3.5;
-      const y = (Math.random() - 0.5) * 1.5;
+      const y = (Math.random() - 0.5) * 2;
 
       mesh.position.set(x, y, z);
       cardsGroup.add(mesh);
       return mesh;
     }
 
+    // Dynamically place new cards at the front of the corridor
     function buildFrontMemoryCard(text) {
       const texture = generateTexture(text);
       const geometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
@@ -577,12 +615,13 @@
 
       const mesh = new THREE.Mesh(geometry, material);
 
+      // Stagger new additions at the front
       const targetZ = firstZ + 13;
-      firstZ = targetZ; 
+      firstZ = targetZ; // Update boundary
 
       const x = cardSideToggleFront ? -3.5 : 3.5;
       cardSideToggleFront = !cardSideToggleFront;
-      const y = (Math.random() - 0.5) * 1.5;
+      const y = (Math.random() - 0.5) * 2;
 
       mesh.position.set(x, y, targetZ);
       cardsGroup.add(mesh);
@@ -590,80 +629,13 @@
       return { mesh, targetX: x, targetY: y, targetZ: targetZ };
     }
 
-    // --- 6. REAL-TIME DATA FETCHING & SYNCING ---
+    // Spawn preset Constellation
+    presetMemories.forEach((mem, index) => {
+      buildPresetMemoryCard(mem, 5 - (index * 13));
+    });
+
     const relicCounter = document.getElementById('relic-count');
-    const renderedDocIds = new Set();
-    let isInitialLoad = true;
-
-    async function fetchMemories() {
-      try {
-        const response = await fetch('/api/memories');
-        const data = await response.json();
-
-        if (isInitialLoad) {
-          // Get the latest 12 entries
-          const recent = data.slice(-12);
-          
-          recent.forEach((item) => {
-            buildPresetMemoryCard(item.text, 5 - (renderedDocIds.size * 13));
-            renderedDocIds.add(item.id);
-          });
-
-          if (renderedDocIds.size > 0) {
-            firstZ = 5 + (renderedDocIds.size - 1) * 13;
-          }
-          isInitialLoad = false;
-        } else {
-          // Append any live modifications dynamically
-          data.forEach((item) => {
-            if (!renderedDocIds.has(item.id)) {
-              renderedDocIds.add(item.id);
-
-              const { mesh, targetX, targetY, targetZ } = buildFrontMemoryCard(item.text);
-              maxScrollZ = firstZ + 7;
-
-              const isLocalAuthor = item.clientId === myClientId;
-              const spawnZ = isLocalAuthor ? (camera.position.z - 4) : targetZ;
-
-              mesh.position.set(camera.position.x, camera.position.y, spawnZ);
-              mesh.scale.set(0.01, 0.01, 0.01);
-
-              triggerNeonBurst(new THREE.Vector3(camera.position.x, camera.position.y, spawnZ));
-
-              const tl = gsap.timeline();
-              tl.to(mesh.scale, {
-                x: 1, y: 1, z: 1,
-                duration: 1.0,
-                ease: 'back.out(1.5)'
-              });
-              tl.to(mesh.position, {
-                x: targetX,
-                y: targetY,
-                z: targetZ,
-                duration: 2.8,
-                ease: 'power4.inOut'
-              }, '-=0.4');
-
-              if (isLocalAuthor) {
-                gsap.to(window, {
-                  duration: 3.2,
-                  onUpdate: () => {
-                    targetCameraZ = targetZ + 7;
-                  }
-                });
-              }
-            }
-          });
-        }
-        relicCounter.textContent = cardsGroup.children.length.toString().padStart(2, '0');
-      } catch (err) {
-        console.error("Backend request failed: ", err);
-      }
-    }
-
-    // Run the loader initially and poll every 5 seconds for updates
-    fetchMemories();
-    setInterval(fetchMemories, 5000);
+    relicCounter.textContent = cardsGroup.children.length.toString().padStart(2, '0');
 
     // --- 7. AMBIENT DUST / STARFIELD ---
     const dustGeometry = new THREE.BufferGeometry();
@@ -672,14 +644,15 @@
     const dustSpeeds = new Float32Array(dustCount);
 
     for (let i = 0; i < dustCount * 3; i += 3) {
-      dustPos[i] = (Math.random() - 0.5) * 50;
-      dustPos[i+1] = (Math.random() - 0.5) * 30;
-      dustPos[i+2] = -Math.random() * 150;
+      dustPos[i] = (Math.random() - 0.5) * 50;     // X
+      dustPos[i+1] = (Math.random() - 0.5) * 30;   // Y
+      dustPos[i+2] = -Math.random() * 150;         // Z
       dustSpeeds[i/3] = 0.02 + Math.random() * 0.05;
     }
 
     dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
 
+    // Generate circular glow canvas for clean dust particles
     function generateDustTexture() {
       const canvas = document.createElement('canvas');
       canvas.width = 32;
@@ -707,14 +680,15 @@
 
     // --- 8. SMOOTH NAVIGATIONAL INERTIA ---
     let targetCameraZ = 12;
-    let maxScrollZ = 12; 
-    let minScrollZ = -120; 
+    let maxScrollZ = 12; // Adjusted dynamically when cards are appended at the front
+    let minScrollZ = -95; // Stays deep enough to view the original back cards
 
     window.addEventListener('wheel', (e) => {
       targetCameraZ -= e.deltaY * 0.04;
       targetCameraZ = Math.min(maxScrollZ, Math.max(minScrollZ, targetCameraZ));
     });
 
+    // Touch support for mobile devices
     let touchYStart = 0;
     let isTouching = false;
     window.addEventListener('touchstart', (e) => {
@@ -732,6 +706,7 @@
 
     window.addEventListener('touchend', () => { isTouching = false; });
 
+    // Parallel camera float (parallax on mousemove)
     let mouse = new THREE.Vector2();
     let targetCameraX = 0;
     let targetCameraY = 0;
@@ -802,7 +777,7 @@
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        color: 0xff007f 
+        color: 0xff007f // Pink sparkles on entry
       });
 
       const points = new THREE.Points(geo, burstMat);
@@ -832,7 +807,7 @@
       });
     }
 
-    // --- 11. SUBMISSION MODAL HANDLING ---
+    // --- 11. SUBMISSION MODAL PIPELINE (ENGRAVING TO FRONT) ---
     const modalOverlay = document.getElementById('modal-overlay');
     const addBtn = document.getElementById('add-btn');
     const closeBtn = document.getElementById('close-btn');
@@ -848,29 +823,53 @@
       modalOverlay.classList.remove('open');
     });
 
-    submitBtn.addEventListener('click', async () => {
+    submitBtn.addEventListener('click', () => {
       const text = memoryInput.value.trim();
       if (text.length === 0) return;
 
       modalOverlay.classList.remove('open');
       memoryInput.value = '';
 
-      try {
-        // Send to local Python Server endpoint. File rewriting is managed automatically on the backend.
-        await fetch('/api/memories', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: text,
-            clientId: myClientId
-          })
-        });
-        
-        // Fetch updates immediately rather than waiting for next poll
-        fetchMemories();
-      } catch (err) {
-        console.error("Failed to commit memory: ", err);
-      }
+      // 1. Build the card dynamically at the new absolute front coordinate
+      const { mesh, targetX, targetY, targetZ } = buildFrontMemoryCard(text);
+
+      // 2. Adjust maximum scroll limit so camera can navigate forward to the new card
+      maxScrollZ = firstZ + 7;
+
+      // 3. Update HUD counter
+      relicCounter.textContent = cardsGroup.children.length.toString().padStart(2, '0');
+
+      // 4. Position the card temporarily in front of the active camera view
+      const spawnZ = camera.position.z - 4;
+      mesh.position.set(camera.position.x, camera.position.y, spawnZ);
+      mesh.scale.set(0.01, 0.01, 0.01);
+
+      // 5. Trigger particle burst
+      const spawnPoint = new THREE.Vector3(camera.position.x, camera.position.y, spawnZ);
+      triggerNeonBurst(spawnPoint);
+
+      // 6. GSAP timeline: Pop the card up, and fly it backward to its front resting spot
+      const tl = gsap.timeline();
+      tl.to(mesh.scale, {
+        x: 1, y: 1, z: 1,
+        duration: 1.0,
+        ease: 'back.out(1.5)'
+      });
+      tl.to(mesh.position, {
+        x: targetX,
+        y: targetY,
+        z: targetZ,
+        duration: 2.8,
+        ease: 'power4.inOut'
+      }, '-=0.4');
+
+      // 7. Pull camera smoothly back to the front entrance to watch the card settle
+      gsap.to(window, {
+        duration: 3.2,
+        onUpdate: () => {
+          targetCameraZ = targetZ + 7;
+        }
+      });
     });
 
     // --- 12. RUNTIME ANIMATION LOOP ---
@@ -880,21 +879,24 @@
       requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
+      // Smooth camera interpolation
       camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetCameraZ, 0.06);
       camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetCameraX, 0.06);
       camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetCameraY, 0.06);
 
+      // Update shader uniforms
       cardsGroup.children.forEach(card => {
         if (card.material.uniforms) {
           card.material.uniforms.uTime.value = elapsedTime;
         }
       });
 
+      // Ambient drift on starfield dust particles
       const positions = dustGeometry.attributes.position.array;
       for (let i = 2; i < positions.length; i += 3) {
-        positions[i] += dustSpeeds[(i-2)/3]; 
+        positions[i] += dustSpeeds[(i-2)/3]; // Slowly push forward
         if (positions[i] > firstZ + 15) {
-          positions[i] = -150; 
+          positions[i] = -150; // Wrap around relative to front boundary
         }
       }
       dustGeometry.attributes.position.needsUpdate = true;
@@ -906,6 +908,7 @@
 
     animate();
 
+    // Responsive Canvas Resizing
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
