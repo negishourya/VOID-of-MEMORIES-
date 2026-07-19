@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room of Memories // Self-Hosted Relics</title>
+  
+  <!-- Monospace Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --color-neon-cyan: #00f3ff;
+      --color-neon-pink: #ff007f;
+      --color-bg: #030305;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--color-bg);
+      font-family: var(--font-mono);
+      color: #ffffff;
+      user-select: none;
+    }
+
+    #webgl {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 40px;
+    }
+
+    .interactive {
+      pointer-events: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .title-group h1 {
+      font-size: 1.2rem;
+      letter-spacing: 4px;
+      color: var(--color-neon-cyan);
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+      font-weight: 700;
+    }
+
+    .title-group p {
+      font-size: 0.75rem;
+      color: #888899;
+      margin-top: 5px;
+      letter-spacing: 1px;
+    }
+
+    .sound-toggle {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      letter-spacing: 1.5px;
+      transition: all 0.3s ease;
+    }
+
+    .sound-toggle:hover, .sound-toggle.active {
+      border-color: var(--color-neon-cyan);
+      color: var(--color-neon-cyan);
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+    }
+
+    .scroll-prompt {
+      align-self: center;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: #555566;
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .btn-action {
+      background: transparent;
+      border: 1px solid var(--color-neon-cyan);
+      color: var(--color-neon-cyan);
+      padding: 14px 28px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 3px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .btn-action:hover {
+      background: var(--color-neon-cyan);
+      color: #000000;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+    }
+
+    .btn-action::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: var(--color-neon-pink);
+      bottom: -3px;
+      right: 10px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 3, 5, 0.9);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(10, 10, 15, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      transform: translateY(20px);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+
+    .modal-header h3 {
+      font-size: 1rem;
+      letter-spacing: 3px;
+      color: var(--color-neon-cyan);
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      color: #555566;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .btn-close:hover {
+      color: var(--color-neon-pink);
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0;
+      padding: 15px;
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      resize: none;
+      outline: none;
+      margin-bottom: 20px;
+      transition: border-color 0.3s;
+    }
+
+    textarea:focus {
+      border-color: var(--color-neon-cyan);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--color-neon-pink);
+      color: var(--color-neon-pink);
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-submit:hover {
+      background: var(--color-neon-pink);
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    @media (max-width: 768px) {
+      .hud { padding: 20px; }
+      .sound-toggle { padding: 6px 12px; font-size: 0.65rem; }
+      .btn-action { padding: 10px 20px; font-size: 0.7rem; }
+      .modal { margin: 20px; padding: 25px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- WebGL Port -->
+  <canvas id="webgl"></canvas>
+
+  <!-- Interactive HUD Interface -->
+  <div class="hud">
+    <div class="header">
+      <div class="title-group">
+        <h1>ROOM_OF_MEMORIES_v5.0</h1>
+        <p>A self-hosted suspended corridor of digital relics.</p>
+      </div>
+      <button class="sound-toggle interactive" id="sound-btn">SOUND: OFF</button>
+    </div>
+
+    <div class="scroll-prompt">
+      [ SCROLL OR DRAG TO EXPLORE THE VOID ]
+    </div>
+
+    <div class="footer">
+      <div class="title-group">
+        <p>TOTAL_RELICS // <span id="relic-count">00</span></p>
+      </div>
+      <button class="btn-action interactive" id="add-btn">ADD A MEMORY</button>
+    </div>
+  </div>
+
+  <!-- Relic Modal Input -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>WRITE TO THE VOID</h3>
+        <button class="btn-close" id="close-btn">&times;</button>
+      </div>
+      <textarea id="memory-input" maxlength="140" placeholder="Type a memory... It will float eternally in deep space. (Max 140 characters)"></textarea>
+      <button class="btn-submit" id="submit-btn">ENGRAVE MEMORY</button>
+    </div>
+  </div>
+
+  <!-- Library Scripts (Three.js and GSAP via unpkg) -->
+  <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.2/dist/gsap.min.js"></script>
+
+  <script>
+    // Local unique identifier for this browser session
+    const myClientId = Math.random().toString(36).substring(2, 15);
+
+    // --- 1. WEB AUDIO SYNTH DRONE ---
+    let audioCtx = null;
+    let mainOsc = null;
+    let filterNode = null;
+    let masterGain = null;
+    let isAudioPlaying = false;
+
+    function initAudio() {
+      if (audioCtx) return;
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      
+      mainOsc = audioCtx.createOscillator();
+      mainOsc.type = 'sawtooth';
+      mainOsc.frequency.setValueAtTime(55, audioCtx.currentTime); // Low A
+
+      filterNode = audioCtx.createBiquadFilter();
+      filterNode.type = 'lowpass';
+      filterNode.frequency.setValueAtTime(140, audioCtx.currentTime);
+      filterNode.Q.setValueAtTime(6, audioCtx.currentTime);
+
+      const lfo = audioCtx.createOscillator();
+      lfo.type = 'sine';
+      lfo.frequency.setValueAtTime(0.08, audioCtx.currentTime);
+      
+      const lfoGain = audioCtx.createGain();
+      lfoGain.gain.setValueAtTime(30, audioCtx.currentTime);
+
+      lfo.connect(lfoGain);
+      lfoGain.connect(filterNode.frequency);
+
+      masterGain = audioCtx.createGain();
+      masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+      mainOsc.connect(filterNode);
+      filterNode.connect(masterGain);
+      masterGain.connect(audioCtx.destination);
+
+      lfo.start();
+      mainOsc.start();
+    }
+
+    const soundBtn = document.getElementById('sound-btn');
+    soundBtn.addEventListener('click', () => {
+      initAudio();
+      if (!isAudioPlaying) {
+        masterGain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 2.0);
+        soundBtn.textContent = 'SOUND: ON';
+        soundBtn.classList.add('active');
+        isAudioPlaying = true;
+      } else {
+        masterGain.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 1.0);
+        soundBtn.textContent = 'SOUND: OFF';
+        soundBtn.classList.remove('active');
+        isAudioPlaying = false;
+      }
+    });
+
+    // --- 2. THREE.JS & WEBGL SETUP ---
+    const canvas = document.getElementById('webgl');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x030305, 0.012);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 18);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(scene.fog.color, 1);
+
+    const cardsGroup = new THREE.Group();
+    scene.add(cardsGroup);
+
+    // --- 3. SHADER DECLARATIONS ---
+    const vertexShader = `
+      uniform float uTime;
+      uniform float uHover;
+      uniform vec2 uMouseLocal;
+      varying vec2 vUv;
+      varying float vDistToMouse;
+
+      void main() {
+        vUv = uv;
+        vec3 pos = position;
+
+        float waveX = sin(pos.y * 1.5 + uTime * 0.8) * 0.04;
+        float waveY = cos(pos.x * 1.5 + uTime * 0.8) * 0.04;
+        pos.x += waveX;
+        pos.y += waveY;
+
+        if (uHover > 0.0) {
+          float dist = distance(uv, uMouseLocal);
+          vDistToMouse = dist;
+          float force = smoothstep(0.4, 0.0, dist) * uHover;
+          pos.z += force * 0.22;
+          pos.z += sin(dist * 25.0 - uTime * 6.0) * force * 0.03;
+        } else {
+          vDistToMouse = 999.0;
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+      }
+    `;
+
+    const fragmentShader = `
+      uniform sampler2D uTexture;
+      uniform float uTime;
+      uniform float uHover;
+      uniform vec3 uColor;
+      varying vec2 vUv;
+      varying float vDistToMouse;
+
+      void main() {
+        vec2 uv = vUv;
+
+        if (uHover > 0.0) {
+          float distortion = smoothstep(0.4, 0.0, vDistToMouse) * uHover * 0.015;
+          uv.x += sin(uv.y * 40.0 + uTime * 8.0) * distortion;
+          uv.y += cos(uv.x * 40.0 + uTime * 8.0) * distortion;
+        }
+
+        vec4 texColor = texture2D(uTexture, uv);
+        float scanline = sin(uv.y * 150.0 + uTime * 5.0) * 0.04;
+        
+        vec3 finalGlow = uColor;
+        if (uHover > 0.0) {
+          vec3 targetPink = vec3(1.0, 0.0, 0.5);
+          finalGlow = mix(uColor, targetPink, uHover * smoothstep(0.4, 0.0, vDistToMouse));
+        }
+
+        vec4 finalColor = texColor;
+        finalColor.rgb += scanline * texColor.a;
+
+        float borderFade = smoothstep(0.0, 0.03, vUv.x) * smoothstep(1.0, 0.97, vUv.x) *
+                           smoothstep(0.0, 0.08, vUv.y) * smoothstep(1.0, 0.92, vUv.y);
+        
+        float alpha = texColor.a * borderFade;
+
+        gl_FragColor = vec4(finalColor.rgb, alpha);
+      }
+    `;
+
+    // --- 4. TEXTURE GENERATOR ---
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+
+      for (let n = 0; n < words.length; n++) {
+        let testLine = line + words[n] + ' ';
+        let metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          lines.push(line);
+          line = words[n] + ' ';
+        } else {
+          line = testLine;
+        }
+      }
+      lines.push(line);
+
+      let startY = y - ((lines.length - 1) * lineHeight) / 2;
+      for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i].trim(), x, startY);
+        startY += lineHeight;
+      }
+    }
+
+    function generateTexture(text) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = 'rgba(5, 5, 8, 0.9)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'rgba(0, 243, 255, 0.02)';
+      for (let y = 0; y < canvas.height; y += 8) {
+        ctx.fillRect(0, y, canvas.width, 1);
+      }
+
+      ctx.strokeStyle = 'rgba(0, 243, 255, 0.2)';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+
+      ctx.strokeStyle = 'rgba(0, 243, 255, 0.7)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(10, 50); ctx.lineTo(10, 10); ctx.lineTo(50, 10);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(canvas.width - 10, canvas.height - 50); 
+      ctx.lineTo(canvas.width - 10, canvas.height - 10); 
+      ctx.lineTo(canvas.width - 50, canvas.height - 10);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(0, 243, 255, 0.6)';
+      ctx.font = '16px "JetBrains Mono", monospace';
+      ctx.fillText(`[ MEM_RELIC // ID: ${Math.floor(1000 + Math.random() * 9000)} ]`, 40, 45);
+
+      ctx.fillStyle = 'rgba(255, 0, 127, 0.6)';
+      ctx.fillText('[ STATUS: FLOATING_IN_VOID ]', canvas.width - 320, canvas.height - 40);
+
+      ctx.shadowColor = '#00f3ff';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 36px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      wrapText(ctx, text, canvas.width / 2, canvas.height / 2, canvas.width - 120, 50);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      return texture;
+    }
+
+    // --- 5. DYNAMIC COORDINATES SYSTEMS ---
+    let firstZ = 5; 
+    let cardSideToggleFront = true;
+
+    function buildPresetMemoryCard(text, z) {
+      const texture = generateTexture(text);
+      const geometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
+      
+      const material = new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader,
+        uniforms: {
+          uTexture: { value: texture },
+          uTime: { value: 0 },
+          uHover: { value: 0 },
+          uMouseLocal: { value: new THREE.Vector2(0.5, 0.5) },
+          uColor: { value: new THREE.Color('#00f3ff') }
+        },
+        transparent: true,
+        depthWrite: false
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      const x = (z % 26 === 5) ? -3.5 : 3.5;
+      const y = (Math.random() - 0.5) * 1.5;
+
+      mesh.position.set(x, y, z);
+      cardsGroup.add(mesh);
+      return mesh;
+    }
+
+    function buildFrontMemoryCard(text) {
+      const texture = generateTexture(text);
+      const geometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
+      
+      const material = new THREE.ShaderMaterial({
+        vertexShader,
+        fragmentShader,
+        uniforms: {
+          uTexture: { value: texture },
+          uTime: { value: 0 },
+          uHover: { value: 0 },
+          uMouseLocal: { value: new THREE.Vector2(0.5, 0.5) },
+          uColor: { value: new THREE.Color('#00f3ff') }
+        },
+        transparent: true,
+        depthWrite: false
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+
+      const targetZ = firstZ + 13;
+      firstZ = targetZ; 
+
+      const x = cardSideToggleFront ? -3.5 : 3.5;
+      cardSideToggleFront = !cardSideToggleFront;
+      const y = (Math.random() - 0.5) * 1.5;
+
+      mesh.position.set(x, y, targetZ);
+      cardsGroup.add(mesh);
+
+      return { mesh, targetX: x, targetY: y, targetZ: targetZ };
+    }
+
+    // --- 6. REAL-TIME DATA FETCHING & SYNCING ---
+    const relicCounter = document.getElementById('relic-count');
+    const renderedDocIds = new Set();
+    let isInitialLoad = true;
+
+    async function fetchMemories() {
+      try {
+        const response = await fetch('/api/memories');
+        const data = await response.json();
+
+        if (isInitialLoad) {
+          // Get the latest 12 entries
+          const recent = data.slice(-12);
+          
+          recent.forEach((item) => {
+            buildPresetMemoryCard(item.text, 5 - (renderedDocIds.size * 13));
+            renderedDocIds.add(item.id);
+          });
+
+          if (renderedDocIds.size > 0) {
+            firstZ = 5 + (renderedDocIds.size - 1) * 13;
+          }
+          isInitialLoad = false;
+        } else {
+          // Append any live modifications dynamically
+          data.forEach((item) => {
+            if (!renderedDocIds.has(item.id)) {
+              renderedDocIds.add(item.id);
+
+              const { mesh, targetX, targetY, targetZ } = buildFrontMemoryCard(item.text);
+              maxScrollZ = firstZ + 7;
+
+              const isLocalAuthor = item.clientId === myClientId;
+              const spawnZ = isLocalAuthor ? (camera.position.z - 4) : targetZ;
+
+              mesh.position.set(camera.position.x, camera.position.y, spawnZ);
+              mesh.scale.set(0.01, 0.01, 0.01);
+
+              triggerNeonBurst(new THREE.Vector3(camera.position.x, camera.position.y, spawnZ));
+
+              const tl = gsap.timeline();
+              tl.to(mesh.scale, {
+                x: 1, y: 1, z: 1,
+                duration: 1.0,
+                ease: 'back.out(1.5)'
+              });
+              tl.to(mesh.position, {
+                x: targetX,
+                y: targetY,
+                z: targetZ,
+                duration: 2.8,
+                ease: 'power4.inOut'
+              }, '-=0.4');
+
+              if (isLocalAuthor) {
+                gsap.to(window, {
+                  duration: 3.2,
+                  onUpdate: () => {
+                    targetCameraZ = targetZ + 7;
+                  }
+                });
+              }
+            }
+          });
+        }
+        relicCounter.textContent = cardsGroup.children.length.toString().padStart(2, '0');
+      } catch (err) {
+        console.error("Backend request failed: ", err);
+      }
+    }
+
+    // Run the loader initially and poll every 5 seconds for updates
+    fetchMemories();
+    setInterval(fetchMemories, 5000);
+
+    // --- 7. AMBIENT DUST / STARFIELD ---
+    const dustGeometry = new THREE.BufferGeometry();
+    const dustCount = 1800;
+    const dustPos = new Float32Array(dustCount * 3);
+    const dustSpeeds = new Float32Array(dustCount);
+
+    for (let i = 0; i < dustCount * 3; i += 3) {
+      dustPos[i] = (Math.random() - 0.5) * 50;
+      dustPos[i+1] = (Math.random() - 0.5) * 30;
+      dustPos[i+2] = -Math.random() * 150;
+      dustSpeeds[i/3] = 0.02 + Math.random() * 0.05;
+    }
+
+    dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+
+    function generateDustTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 32;
+      canvas.height = 32;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      grad.addColorStop(0, 'rgba(0, 243, 255, 1)');
+      grad.addColorStop(0.3, 'rgba(0, 100, 255, 0.4)');
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0, 32, 32);
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    const dustMaterial = new THREE.PointsMaterial({
+      size: 0.15,
+      map: generateDustTexture(),
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+    });
+
+    const dustParticles = new THREE.Points(dustGeometry, dustMaterial);
+    scene.add(dustParticles);
+
+    // --- 8. SMOOTH NAVIGATIONAL INERTIA ---
+    let targetCameraZ = 12;
+    let maxScrollZ = 12; 
+    let minScrollZ = -120; 
+
+    window.addEventListener('wheel', (e) => {
+      targetCameraZ -= e.deltaY * 0.04;
+      targetCameraZ = Math.min(maxScrollZ, Math.max(minScrollZ, targetCameraZ));
+    });
+
+    let touchYStart = 0;
+    let isTouching = false;
+    window.addEventListener('touchstart', (e) => {
+      touchYStart = e.touches[0].clientY;
+      isTouching = true;
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (!isTouching) return;
+      const deltaY = e.touches[0].clientY - touchYStart;
+      touchYStart = e.touches[0].clientY;
+      targetCameraZ += deltaY * 0.08;
+      targetCameraZ = Math.min(maxScrollZ, Math.max(minScrollZ, targetCameraZ));
+    });
+
+    window.addEventListener('touchend', () => { isTouching = false; });
+
+    let mouse = new THREE.Vector2();
+    let targetCameraX = 0;
+    let targetCameraY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+      targetCameraX = mouse.x * 1.5;
+      targetCameraY = mouse.y * 1.0;
+    });
+
+    // --- 9. INTERACTIVE RAYCASTING (HOVER RIPPLES) ---
+    const raycaster = new THREE.Raycaster();
+    let activeCard = null;
+
+    function handleRaycast() {
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(cardsGroup.children);
+
+      if (intersects.length > 0) {
+        const hit = intersects[0];
+        const card = hit.object;
+
+        if (activeCard && activeCard !== card) {
+          gsap.to(activeCard.material.uniforms.uHover, { value: 0.0, duration: 0.5 });
+        }
+
+        activeCard = card;
+        gsap.to(card.material.uniforms.uHover, { value: 1.0, duration: 0.3 });
+        card.material.uniforms.uMouseLocal.value.copy(hit.uv);
+      } else {
+        if (activeCard) {
+          gsap.to(activeCard.material.uniforms.uHover, { value: 0.0, duration: 0.5 });
+          activeCard = null;
+        }
+      }
+    }
+
+    // --- 10. SPARK BURST SYSTEM (ON ENGRAVING SUBMISSIONS) ---
+    function triggerNeonBurst(pos) {
+      const count = 60;
+      const geo = new THREE.BufferGeometry();
+      const positions = new Float32Array(count * 3);
+      const targets = [];
+
+      for(let i=0; i<count; i++) {
+        positions[i*3] = pos.x;
+        positions[i*3+1] = pos.y;
+        positions[i*3+2] = pos.z;
+
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos((Math.random() * 2) - 1);
+        const radius = 1.5 + Math.random() * 4.0;
+
+        targets.push({
+          x: pos.x + radius * Math.sin(phi) * Math.cos(theta),
+          y: pos.y + radius * Math.sin(phi) * Math.sin(theta),
+          z: pos.z + radius * Math.cos(phi)
+        });
+      }
+
+      geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      
+      const burstMat = new THREE.PointsMaterial({
+        size: 0.12,
+        map: generateDustTexture(),
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        color: 0xff007f 
+      });
+
+      const points = new THREE.Points(geo, burstMat);
+      scene.add(points);
+
+      const anim = { progress: 0 };
+      const arr = points.geometry.attributes.position.array;
+
+      gsap.to(anim, {
+        progress: 1,
+        duration: 1.8,
+        ease: 'power3.out',
+        onUpdate: () => {
+          for(let i=0; i<count; i++) {
+            arr[i*3] = THREE.MathUtils.lerp(pos.x, targets[i].x, anim.progress);
+            arr[i*3+1] = THREE.MathUtils.lerp(pos.y, targets[i].y, anim.progress);
+            arr[i*3+2] = THREE.MathUtils.lerp(pos.z, targets[i].z, anim.progress);
+          }
+          points.geometry.attributes.position.needsUpdate = true;
+          burstMat.opacity = 1.0 - anim.progress;
+        },
+        onComplete: () => {
+          scene.remove(points);
+          points.geometry.dispose();
+          burstMat.dispose();
+        }
+      });
+    }
+
+    // --- 11. SUBMISSION MODAL HANDLING ---
+    const modalOverlay = document.getElementById('modal-overlay');
+    const addBtn = document.getElementById('add-btn');
+    const closeBtn = document.getElementById('close-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const memoryInput = document.getElementById('memory-input');
+
+    addBtn.addEventListener('click', () => {
+      modalOverlay.classList.add('open');
+      memoryInput.focus();
+    });
+
+    closeBtn.addEventListener('click', () => {
+      modalOverlay.classList.remove('open');
+    });
+
+    submitBtn.addEventListener('click', async () => {
+      const text = memoryInput.value.trim();
+      if (text.length === 0) return;
+
+      modalOverlay.classList.remove('open');
+      memoryInput.value = '';
+
+      try {
+        // Send to local Python Server endpoint. File rewriting is managed automatically on the backend.
+        await fetch('/api/memories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: text,
+            clientId: myClientId
+          })
+        });
+        
+        // Fetch updates immediately rather than waiting for next poll
+        fetchMemories();
+      } catch (err) {
+        console.error("Failed to commit memory: ", err);
+      }
+    });
+
+    // --- 12. RUNTIME ANIMATION LOOP ---
+    const clock = new THREE.Clock();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsedTime = clock.getElapsedTime();
+
+      camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetCameraZ, 0.06);
+      camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetCameraX, 0.06);
+      camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetCameraY, 0.06);
+
+      cardsGroup.children.forEach(card => {
+        if (card.material.uniforms) {
+          card.material.uniforms.uTime.value = elapsedTime;
+        }
+      });
+
+      const positions = dustGeometry.attributes.position.array;
+      for (let i = 2; i < positions.length; i += 3) {
+        positions[i] += dustSpeeds[(i-2)/3]; 
+        if (positions[i] > firstZ + 15) {
+          positions[i] = -150; 
+        }
+      }
+      dustGeometry.attributes.position.needsUpdate = true;
+
+      handleRaycast();
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+  </script>
+</body>
+</html>
