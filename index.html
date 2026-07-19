@@ -57,6 +57,7 @@
       flex-direction: column;
       justify-content: space-between;
       padding: 40px;
+      transition: opacity 1s ease;
     }
 
     .interactive {
@@ -112,6 +113,18 @@
       letter-spacing: 2px;
       color: #555566;
       animation: pulse 2s infinite ease-in-out;
+      transition: color 0.3s, text-shadow 0.3s, opacity 0.3s;
+    }
+
+    .scroll-prompt.active-trigger {
+      color: var(--color-neon-pink);
+      text-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+      cursor: pointer;
+    }
+
+    .scroll-prompt.active-trigger:hover {
+      color: #ffffff;
+      text-shadow: 0 0 15px rgba(255, 0, 127, 0.8), 0 0 30px rgba(255, 0, 127, 0.6);
     }
 
     /* Bottom Section */
@@ -255,6 +268,621 @@
       box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
     }
 
+    /* --- Voyage Overlay System --- */
+    .voyage-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 5;
+      background: rgba(3, 3, 5, 0.25);
+      backdrop-filter: blur(1px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s ease;
+      padding: 20px;
+    }
+
+    .voyage-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Compact 3D Floating Hologram Container */
+    .voyage-terminal {
+      width: 90%;
+      max-width: 440px;
+      background: rgba(0, 243, 255, 0.03);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 243, 255, 0.4);
+      padding: 24px;
+      font-family: var(--font-mono);
+      color: #ffffff;
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.15), inset 0 0 15px rgba(0, 243, 255, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+
+      /* 3D Angled Matrix Projection */
+      transform: perspective(1000px) rotateX(7deg) rotateY(-10deg) translateZ(40px);
+      animation: holo-float 4s infinite ease-in-out;
+      transition: border-color 0.8s, background-color 0.8s, box-shadow 0.8s;
+    }
+
+    /* Scanline Matrix Overlay inside Hologram */
+    .voyage-terminal::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(0, 243, 255, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 243, 255, 0.04));
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+      opacity: 0.65;
+      z-index: 2;
+    }
+
+    /* Dynamic Holographic Shift to Neon Pink */
+    .voyage-terminal.pink-holo {
+      border-color: rgba(255, 0, 127, 0.5);
+      background: rgba(255, 0, 127, 0.03);
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.15), inset 0 0 15px rgba(255, 0, 127, 0.05);
+    }
+
+    .voyage-terminal.pink-holo::before {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 127, 0.04), rgba(0, 255, 0, 0.01), rgba(255, 0, 127, 0.04));
+      background-size: 100% 4px, 6px 100%;
+    }
+
+    .voyage-text {
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: #ffffff;
+      min-height: 60px;
+      letter-spacing: 0.8px;
+    }
+
+    .voyage-input-container {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+    }
+
+    .voyage-input-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .voyage-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 243, 255, 0.3);
+      color: #ffffff;
+      padding: 10px 14px;
+      font-family: var(--font-mono);
+      outline: none;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      transition: border-color 0.3s;
+    }
+
+    .voyage-input:focus {
+      border-color: var(--color-neon-cyan);
+    }
+
+    .voyage-btn {
+      background: transparent;
+      border: 1px solid var(--color-neon-cyan);
+      color: var(--color-neon-cyan);
+      padding: 10px 20px;
+      font-family: var(--font-mono);
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .voyage-btn:hover {
+      background: var(--color-neon-cyan);
+      color: #000000;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+    }
+
+    .voyage-choices {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      pointer-events: none;
+    }
+
+    .voyage-choices.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .voyage-btn.pink {
+      border-color: var(--color-neon-pink);
+      color: var(--color-neon-pink);
+    }
+
+    .voyage-btn.pink:hover {
+      background: var(--color-neon-pink);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
+    }
+
+    .terminal-caret {
+      display: inline-block;
+      width: 10px;
+      height: 16px;
+      background: var(--color-neon-pink);
+      margin-left: 5px;
+      animation: blink 1s infinite;
+      vertical-align: middle;
+    }
+
+    /* --- Dynamic Hologram & Lists Styling --- */
+    .hologram-transmission {
+      display: block;
+      border-left: 2px solid var(--color-neon-cyan);
+      padding: 8px 0 8px 15px;
+      margin: 10px 0;
+      color: var(--color-neon-cyan);
+      text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+      font-style: italic;
+      line-height: 1.5;
+      font-size: 0.85rem;
+    }
+
+    .voyage-terminal.pink-holo .hologram-transmission {
+      border-left-color: var(--color-neon-pink);
+      color: var(--color-neon-pink);
+      text-shadow: 0 0 8px rgba(255, 0, 127, 0.5);
+    }
+
+    .voyage-info-box {
+      border: 1px dashed rgba(0, 243, 255, 0.3);
+      padding: 15px;
+      background: rgba(0, 243, 255, 0.01);
+      margin: 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-align: left;
+      transition: border-color 0.8s;
+    }
+
+    .voyage-terminal.pink-holo .voyage-info-box {
+      border-color: rgba(255, 0, 127, 0.3);
+    }
+
+    .voyage-info-section {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .voyage-info-title {
+      color: var(--color-neon-pink);
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 8px rgba(255, 0, 127, 0.4);
+      text-transform: uppercase;
+    }
+
+    .voyage-info-list {
+      color: #e0e0ff;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      list-style-type: none;
+    }
+
+    .voyage-info-list li {
+      margin-bottom: 4px;
+      padding-left: 15px;
+      position: relative;
+    }
+
+    .voyage-info-list li::before {
+      content: '>';
+      position: absolute;
+      left: 0;
+      color: var(--color-neon-cyan);
+      font-weight: bold;
+    }
+
+    .voyage-terminal.pink-holo .voyage-info-list li::before {
+      color: var(--color-neon-pink);
+    }
+
+    .tap-continue-btn {
+      animation: pulse 1.5s infinite ease-in-out;
+      border-color: var(--color-neon-pink);
+      color: var(--color-neon-pink);
+    }
+
+    .tap-continue-btn:hover {
+      background: var(--color-neon-pink);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
+    }
+
+    /* --- Integrated Contacts Screen Overlay --- */
+    .contact-screen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 15;
+      background: rgba(3, 3, 5, 0.88);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s ease, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0.92);
+      overflow-y: auto;
+      padding: 60px 20px;
+    }
+
+    .contact-screen-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    /* Ambient Glows Inside Overlay */
+    .contact-bg-glow-cyan {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 243, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+      top: -10%;
+      left: 10%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .contact-bg-glow-pink {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 0, 127, 0.06) 0%, rgba(0, 0, 0, 0) 70%);
+      bottom: -10%;
+      right: 5%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .contact-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 1100px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 50px;
+      align-items: center;
+      margin: auto;
+    }
+
+    @media (min-width: 768px) {
+      .contact-wrapper {
+        grid-template-columns: 1fr 1.1fr;
+        gap: 60px;
+      }
+    }
+
+    /* Back Button to Void */
+    .btn-back-void {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #888899;
+      padding: 10px 20px;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      z-index: 2;
+    }
+
+    .btn-back-void:hover {
+      border-color: var(--color-neon-pink);
+      color: var(--color-neon-pink);
+      box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+    }
+
+    /* Left Column Details */
+    .contact-left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .contact-pill-badge {
+      align-self: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      color: #888899;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      backdrop-filter: blur(10px);
+    }
+
+    .contact-pill-dot {
+      width: 6px;
+      height: 6px;
+      background-color: var(--color-neon-pink);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--color-neon-pink);
+    }
+
+    .contact-left-col h2 {
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      color: #ffffff;
+    }
+
+    .contact-left-col h2 span {
+      color: var(--color-neon-cyan);
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    }
+
+    .contact-left-col p.contact-desc {
+      font-size: 0.9rem;
+      color: #a0a0b0;
+      line-height: 1.6;
+      max-width: 450px;
+    }
+
+    /* Cards */
+    .contact-list-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .contact-card-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 10, 15, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 20px;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(12px);
+    }
+
+    .contact-card-item:hover {
+      border-color: rgba(0, 243, 255, 0.4);
+      background: rgba(0, 243, 255, 0.02);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 243, 255, 0.05);
+    }
+
+    .contact-card-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-icon-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #a0a0b0;
+      transition: all 0.3s ease;
+    }
+
+    .contact-card-item:hover .contact-icon-box {
+      border-color: var(--color-neon-cyan);
+      color: var(--color-neon-cyan);
+      background: rgba(0, 243, 255, 0.05);
+      box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+    }
+
+    .contact-card-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .contact-card-label {
+      font-size: 0.75rem;
+      color: #666680;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+
+    .contact-card-value {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #ffffff;
+    }
+
+    .contact-arrow-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #888899;
+      transition: all 0.3s ease;
+    }
+
+    .contact-card-item:hover .contact-arrow-box {
+      background: var(--color-neon-cyan);
+      color: #000000;
+      border-color: var(--color-neon-cyan);
+      transform: rotate(45deg);
+    }
+
+    /* Form Styles */
+    .contact-form-container {
+      background: rgba(8, 8, 12, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 32px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+    }
+
+    .contact-form-container::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 30px;
+      width: 40px;
+      height: 2px;
+      background: var(--color-neon-pink);
+    }
+
+    .contact-form-container::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      right: 30px;
+      width: 40px;
+      height: 2px;
+      background: var(--color-neon-cyan);
+    }
+
+    .contact-input-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .contact-input-wrapper label {
+      font-size: 0.75rem;
+      color: #888899;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding-left: 4px;
+    }
+
+    .contact-form-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .contact-form-input:focus {
+      border-color: var(--color-neon-pink);
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.15);
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    textarea.contact-form-input {
+      height: 140px;
+      resize: none;
+    }
+
+    .contact-btn-submit {
+      width: 100%;
+      background: #ffffff;
+      color: #030305;
+      border: none;
+      border-radius: 12px;
+      padding: 18px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .contact-btn-submit:hover {
+      background: var(--color-neon-pink);
+      color: #ffffff;
+      box-shadow: 0 0 25px rgba(255, 0, 127, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .contact-icon-svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* Perspective Hover Drift keyframes */
+    @keyframes holo-float {
+      0%, 100% {
+        transform: perspective(1000px) rotateX(7deg) rotateY(-10deg) translateZ(40px) translateY(0);
+        filter: brightness(1) drop-shadow(0 0 10px rgba(0, 243, 255, 0.1));
+      }
+      50% {
+        transform: perspective(1000px) rotateX(8.5deg) rotateY(-8deg) translateZ(50px) translateY(-5px);
+        filter: brightness(1.15) drop-shadow(0 0 20px rgba(0, 243, 255, 0.25));
+      }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
     @keyframes pulse {
       0%, 100% { opacity: 0.3; }
       50% { opacity: 0.8; }
@@ -283,7 +911,7 @@
       <button class="sound-toggle interactive" id="sound-btn">SOUND: OFF</button>
     </div>
 
-    <div class="scroll-prompt">
+    <div class="scroll-prompt" id="scroll-prompt-el">
       [ SCROLL OR DRAG TO EXPLORE THE VOID ]
     </div>
 
@@ -291,7 +919,7 @@
       <div class="title-group">
         <p>TOTAL_RELICS // <span id="relic-count">08</span></p>
       </div>
-      <button class="btn-action interactive" id="add-btn">ADD A MEMORY</button>
+      <button class="btn-action interactive" id="connect-btn">LET'S CONNECT</button>
     </div>
   </div>
 
@@ -304,6 +932,139 @@
       </div>
       <textarea id="memory-input" maxlength="140" placeholder="Type a memory... It will float eternally in deep space. (Max 140 characters)"></textarea>
       <button class="btn-submit" id="submit-btn">ENGRAVE MEMORY</button>
+    </div>
+  </div>
+
+  <!-- Dynamic Voyage Scenario System -->
+  <div class="voyage-overlay" id="voyage-overlay">
+    <div class="voyage-terminal" id="voyage-terminal-box">
+      <div class="voyage-text" id="voyage-text-content"></div>
+      
+      <!-- Designation Input Field -->
+      <div class="voyage-input-container" id="voyage-input-container">
+        <input type="text" id="voyage-name" class="voyage-input" maxlength="20" placeholder="ENTER DESIRED DESIGNATION..." autocomplete="off">
+        <button id="voyage-name-submit" class="voyage-btn">SUBMIT</button>
+      </div>
+
+      <!-- Binary Yes / No Choices -->
+      <div class="voyage-choices" id="voyage-choices-container">
+        <button id="voyage-yes" class="voyage-btn">YES</button>
+        <button id="voyage-no" class="voyage-btn pink">NO</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Screen Overlay -->
+  <div class="contact-screen-overlay" id="contact-screen-overlay">
+    <div class="contact-bg-glow-cyan"></div>
+    <div class="contact-bg-glow-pink"></div>
+    <button class="btn-back-void interactive" id="back-void-btn">[ RETURN TO VOID ]</button>
+
+    <div class="contact-wrapper">
+      
+      <!-- Left Section: Meta and Direct Links -->
+      <div class="contact-left-col">
+        <div class="contact-pill-badge">
+          <div class="contact-pill-dot"></div>
+          <span>[ TRANSMIT_PORTAL ]</span>
+        </div>
+
+        <h2>Get in <span>touch</span></h2>
+        
+        <p class="contact-desc">Have inquiries, coordinates, or questions? Send a direct data transmission or establish sync across alternate channels.</p>
+
+        <div class="contact-list-cards">
+          
+          <!-- Email Card -->
+          <a href="mailto:siddhantsolves@gmail.com" class="contact-card-item">
+            <div class="contact-card-left">
+              <div class="contact-icon-box">
+                <svg class="contact-icon-svg" viewBox="0 0 24 24">
+                  <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+              </div>
+              <div class="contact-card-text-group">
+                <span class="contact-card-label">Email us</span>
+                <span class="contact-card-value">siddhantsolves@gmail.com</span>
+              </div>
+            </div>
+            <div class="contact-arrow-box">
+              <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+                <path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- LinkedIn Card -->
+          <a href="https://www.linkedin.com/in/siddhant-pandey-81a30835b?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" class="contact-card-item">
+            <div class="contact-card-left">
+              <div class="contact-icon-box">
+                <svg class="contact-icon-svg" viewBox="0 0 24 24">
+                  <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+                </svg>
+              </div>
+              <div class="contact-card-text-group">
+                <span class="contact-card-label">LinkedIn</span>
+                <span class="contact-card-value">Siddhant Pandey</span>
+              </div>
+            </div>
+            <div class="contact-arrow-box">
+              <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+                <path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/>
+              </svg>
+            </div>
+          </a>
+
+          <!-- GitHub Card -->
+          <a href="https://github.com/siddhantsolves" target="_blank" class="contact-card-item">
+            <div class="contact-card-left">
+              <div class="contact-icon-box">
+                <svg class="contact-icon-svg" viewBox="0 0 24 24">
+                  <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+                </svg>
+              </div>
+              <div class="contact-card-text-group">
+                <span class="contact-card-label">GitHub</span>
+                <span class="contact-card-value">siddhantsolves</span>
+              </div>
+            </div>
+            <div class="contact-arrow-box">
+              <svg viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor;">
+                <path d="M5 13h11.86l-5.43 5.43 1.42 1.42L21.14 12l-8.29-8.29-1.42 1.42L16.86 11H5v2z"/>
+              </svg>
+            </div>
+          </a>
+
+        </div>
+      </div>
+
+      <!-- Right Section: Interactive Terminal Form -->
+      <form id="cyber-contact-form" class="contact-form-container">
+        
+        <div class="contact-input-wrapper">
+          <label for="contact-name">Name</label>
+          <input type="text" id="contact-name" class="contact-form-input" placeholder="Your identification..." required autocomplete="off">
+        </div>
+
+        <div class="contact-input-wrapper">
+          <label for="contact-email">Email</label>
+          <input type="email" id="contact-email" class="contact-form-input" placeholder="Your return frequency..." required autocomplete="off">
+        </div>
+
+        <div class="contact-input-wrapper">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" class="contact-form-input" placeholder="Encrypt transmission details here..." required></textarea>
+        </div>
+
+        <button type="submit" class="contact-btn-submit">
+          <span>Transmit Message</span>
+          <svg class="contact-icon-svg" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+          </svg>
+        </button>
+
+      </form>
+
     </div>
   </div>
 
@@ -367,6 +1128,23 @@
 
       lfo.start();
       mainOsc.start();
+    }
+
+    // High fidelity typewriter sound effect
+    function playTickSound() {
+      if (!isAudioPlaying || !audioCtx) return;
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800 + Math.random() * 400, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.006, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      } catch(e) {}
     }
 
     const soundBtn = document.getElementById('sound-btn');
@@ -478,6 +1256,76 @@
       }
     `;
 
+    // --- 4B. ISOLATED SHADERS FOR SELECTION PORTAL CARDS ---
+    const portalVertexShader = `
+      uniform float uTime;
+      uniform float uHover;
+      uniform vec2 uMouseLocal;
+      varying vec2 vUv;
+      varying float vDistToMouse;
+
+      void main() {
+        vUv = uv;
+        vec3 pos = position;
+
+        float waveX = sin(pos.y * 1.5 + uTime * 0.8) * 0.04;
+        float waveY = cos(pos.x * 1.5 + uTime * 0.8) * 0.04;
+        pos.x += waveX;
+        pos.y += waveY;
+
+        if (uHover > 0.0) {
+          float dist = distance(uv, uMouseLocal);
+          vDistToMouse = dist;
+          float force = smoothstep(0.4, 0.0, dist) * uHover;
+          pos.z += force * 0.22;
+          pos.z += sin(dist * 25.0 - uTime * 6.0) * force * 0.03;
+        } else {
+          vDistToMouse = 999.0;
+        }
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+      }
+    `;
+
+    const portalFragmentShader = `
+      uniform sampler2D uTexture;
+      uniform float uTime;
+      uniform float uHover;
+      uniform vec3 uColor;
+      uniform vec3 uHoverColor;
+      varying vec2 vUv;
+      varying float vDistToMouse;
+
+      void main() {
+        vec2 uv = vUv;
+
+        if (uHover > 0.0) {
+          float distortion = smoothstep(0.4, 0.0, vDistToMouse) * uHover * 0.015;
+          uv.x += sin(uv.y * 40.0 + uTime * 8.0) * distortion;
+          uv.y += cos(uv.x * 40.0 + uTime * 8.0) * distortion;
+        }
+
+        vec4 texColor = texture2D(uTexture, uv);
+        float scanline = sin(uv.y * 150.0 + uTime * 5.0) * 0.04;
+        
+        vec3 finalGlow = uColor;
+        if (uHover > 0.0) {
+          finalGlow = mix(uColor, uHoverColor, uHover * smoothstep(0.4, 0.0, vDistToMouse));
+        }
+
+        vec4 finalColor = texColor;
+        finalColor.rgb = mix(finalColor.rgb, finalGlow, 0.15);
+        finalColor.rgb += scanline * texColor.a;
+
+        float borderFade = smoothstep(0.0, 0.03, vUv.x) * smoothstep(1.0, 0.97, vUv.x) *
+                           smoothstep(0.0, 0.08, vUv.y) * smoothstep(1.0, 0.92, vUv.y);
+        
+        float alpha = texColor.a * borderFade;
+
+        gl_FragColor = vec4(finalColor.rgb, alpha);
+      }
+    `;
+
     // --- 5. HIGH-RESOLUTION CANVAS TEXTURE CONSTRUCTOR ---
     function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
       const words = text.split(' ');
@@ -562,6 +1410,62 @@
       return texture;
     }
 
+    // --- 5B. ENGRAVING TERMINAL CANVAS TEXTURE CONSTRUCTOR ---
+    function generateEngraveTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      // Slightly pinkish dark backdrop
+      ctx.fillStyle = 'rgba(10, 5, 12, 0.95)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Neon grid lines
+      ctx.fillStyle = 'rgba(255, 0, 127, 0.03)';
+      for (let y = 0; y < canvas.height; y += 8) {
+        ctx.fillRect(0, y, canvas.width, 1);
+      }
+
+      // Neon pink border
+      ctx.strokeStyle = 'rgba(255, 0, 127, 0.4)';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
+
+      // Technical corners
+      ctx.strokeStyle = '#ff007f';
+      ctx.lineWidth = 3;
+      // Top-Left
+      ctx.beginPath(); ctx.moveTo(10, 60); ctx.lineTo(10, 10); ctx.lineTo(60, 10); ctx.stroke();
+      // Bottom-Right
+      ctx.beginPath(); ctx.moveTo(canvas.width - 10, canvas.height - 60); ctx.lineTo(canvas.width - 10, canvas.height - 10); ctx.lineTo(canvas.width - 60, canvas.height - 10); ctx.stroke();
+
+      // Technical Header
+      ctx.fillStyle = '#ff007f';
+      ctx.font = 'bold 20px "JetBrains Mono", monospace';
+      ctx.fillText('[ PROTOCOL // VOID_ENGRAVING_v5.0 ]', 40, 50);
+
+      // Sub footer
+      ctx.fillStyle = '#00f3ff';
+      ctx.font = '16px "JetBrains Mono", monospace';
+      ctx.fillText('[ STATUS: READY_TO_RECEIVE_INPUT ]', 40, canvas.height - 40);
+
+      // Core centered text instructions
+      ctx.shadowColor = '#ff007f';
+      ctx.shadowBlur = 15;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 44px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      ctx.fillText('CLICK TO ENGRAVE', canvas.width / 2, canvas.height / 2 - 25);
+      ctx.fillText('YOUR OWN MEMORY', canvas.width / 2, canvas.height / 2 + 25);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+      return texture;
+    }
+
     // --- 6. ADD MEMORY TO SPACE ---
     let firstZ = 5; // Track the absolute front-most coordinate
     let cardSideToggleFront = true;
@@ -635,7 +1539,244 @@
     });
 
     const relicCounter = document.getElementById('relic-count');
-    relicCounter.textContent = cardsGroup.children.length.toString().padStart(2, '0');
+    
+    // Clean counting mechanism filtering portal and system UI cards
+    function updateRelicCounter() {
+      const count = cardsGroup.children.filter(child => !child.userData.isPortal && !child.userData.isEngraveCard).length;
+      relicCounter.textContent = count.toString().padStart(2, '0');
+    }
+
+    // --- 6B. ENGRAVING TERMINAL CARD SETUP (PERFECT MIDDLE) ---
+    const engraveCardZ = -105; // Positioned dynamically past the last memory relic
+    const engraveTexture = generateEngraveTexture();
+    const engraveGeometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
+
+    const engraveMaterial = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader: portalFragmentShader, // Utilizes portal fragment shader to handle custom hover shifts
+      uniforms: {
+        uTexture: { value: engraveTexture },
+        uTime: { value: 0 },
+        uHover: { value: 0 },
+        uMouseLocal: { value: new THREE.Vector2(0.5, 0.5) },
+        uColor: { value: new THREE.Color('#ff007f') }, // Ambient neon pink
+        uHoverColor: { value: new THREE.Color('#00f3ff') } // Hover shifts to cyan
+      },
+      transparent: true,
+      depthWrite: false
+    });
+
+    const engraveMesh = new THREE.Mesh(engraveGeometry, engraveMaterial);
+    engraveMesh.position.set(0, 0, engraveCardZ); // Perfect middle centering (X: 0, Y: 0)
+    engraveMesh.userData = {
+      isEngraveCard: true
+    };
+    cardsGroup.add(engraveMesh);
+
+    // --- 6C. THE RED AND BLUE UNIVERSES PAST THE END ---
+    const portalsZ = -145; // Deeper coordinate region past the last card
+
+    // Left Blue Universe Group
+    const leftUniverse = new THREE.Group();
+    leftUniverse.position.set(-6.5, 0.8, portalsZ);
+    scene.add(leftUniverse);
+
+    // Blue Core Geometry
+    const blueCoreGeo = new THREE.IcosahedronGeometry(1.6, 2);
+    const blueCoreMat = new THREE.MeshBasicMaterial({
+      color: 0x00f3ff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.4
+    });
+    const blueCore = new THREE.Mesh(blueCoreGeo, blueCoreMat);
+    leftUniverse.add(blueCore);
+
+    // Blue Saturn Ring
+    const blueRingGeo = new THREE.TorusGeometry(2.6, 0.05, 8, 64);
+    const blueRingMat = new THREE.MeshBasicMaterial({
+      color: 0x0088ff,
+      transparent: true,
+      opacity: 0.8
+    });
+    const blueRing = new THREE.Mesh(blueRingGeo, blueRingMat);
+    blueRing.rotation.x = Math.PI / 1.8;
+    blueRing.rotation.y = 0.3;
+    leftUniverse.add(blueRing);
+
+    // Left Universe Local Particles
+    const leftPartGeo = new THREE.BufferGeometry();
+    const leftPartCount = 180;
+    const leftPartPos = new Float32Array(leftPartCount * 3);
+    for(let i=0; i<leftPartCount*3; i+=3) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2.0 * Math.random() - 1.0);
+      const r = 2.0 + Math.random() * 1.5;
+      leftPartPos[i] = r * Math.sin(phi) * Math.cos(theta);
+      leftPartPos[i+1] = r * Math.sin(phi) * Math.sin(theta);
+      leftPartPos[i+2] = r * Math.cos(phi);
+    }
+    leftPartGeo.setAttribute('position', new THREE.BufferAttribute(leftPartPos, 3));
+    const leftPartMat = new THREE.PointsMaterial({
+      color: 0x00f3ff,
+      size: 0.08,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+    const leftParticles = new THREE.Points(leftPartGeo, leftPartMat);
+    leftUniverse.add(leftParticles);
+
+
+    // Right Red Universe Group
+    const rightUniverse = new THREE.Group();
+    rightUniverse.position.set(6.5, 0.8, portalsZ);
+    scene.add(rightUniverse);
+
+    // Red Core Geometry
+    const redCoreGeo = new THREE.OctahedronGeometry(1.7, 1);
+    const redCoreMat = new THREE.MeshBasicMaterial({
+      color: 0xff007f,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.4
+    });
+    const redCore = new THREE.Mesh(redCoreGeo, redCoreMat);
+    rightUniverse.add(redCore);
+
+    // Outer nested wireframe box
+    const redCageGeo = new THREE.BoxGeometry(2.7, 2.7, 2.7);
+    const redCageMat = new THREE.MeshBasicMaterial({
+      color: 0xff0044,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.25
+    });
+    const redCage = new THREE.Mesh(redCageGeo, redCageMat);
+    rightUniverse.add(redCage);
+
+    // Right Universe Local Particles
+    const rightPartGeo = new THREE.BufferGeometry();
+    const rightPartCount = 180;
+    const rightPartPos = new Float32Array(rightPartCount * 3);
+    for(let i=0; i<rightPartCount*3; i+=3) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2.0 * Math.random() - 1.0);
+      const r = 2.0 + Math.random() * 1.5;
+      rightPartPos[i] = r * Math.sin(phi) * Math.cos(theta);
+      rightPartPos[i+1] = r * Math.sin(phi) * Math.sin(theta);
+      rightPartPos[i+2] = r * Math.cos(phi);
+    }
+    rightPartGeo.setAttribute('position', new THREE.BufferAttribute(rightPartPos, 3));
+    const rightPartMat = new THREE.PointsMaterial({
+      color: 0xff007f,
+      size: 0.08,
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
+    });
+    const rightParticles = new THREE.Points(rightPartGeo, rightPartMat);
+    rightUniverse.add(rightParticles);
+
+
+    // --- 6D. GENERATE PORTAL / INTERACTIVE CHOICE CARDS ---
+    function buildPortalChoiceCard(text, subtitle, mainColor, hoverColor, x, y, z, type, targetUrl) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 512;
+      const ctx = canvas.getContext('2d');
+
+      // Dark background panel
+      ctx.fillStyle = 'rgba(5, 5, 8, 0.95)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Matrix background lines
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.015)';
+      for (let y = 0; y < canvas.height; y += 8) {
+        ctx.fillRect(0, y, canvas.width, 1);
+      }
+
+      // Strong styled border frame
+      ctx.strokeStyle = mainColor;
+      ctx.lineWidth = 10;
+      ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+
+      // Card Metadata Header
+      ctx.fillStyle = mainColor;
+      ctx.font = '24px "JetBrains Mono", monospace';
+      ctx.fillText('[ INITIATE_ACCESS_PROTOCOL ]', 60, 80);
+
+      // Core Text Header
+      ctx.shadowColor = mainColor;
+      ctx.shadowBlur = 15;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 72px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 10);
+
+      // Subtitle navigation guide
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = '24px "JetBrains Mono", monospace';
+      ctx.fillText(subtitle, canvas.width / 2, canvas.height / 2 + 105);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      texture.minFilter = THREE.LinearFilter;
+
+      const geometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
+      
+      const material = new THREE.ShaderMaterial({
+        vertexShader: portalVertexShader,
+        fragmentShader: portalFragmentShader,
+        uniforms: {
+          uTexture: { value: texture },
+          uTime: { value: 0 },
+          uHover: { value: 0 },
+          uMouseLocal: { value: new THREE.Vector2(0.5, 0.5) },
+          uColor: { value: new THREE.Color(mainColor) },
+          uHoverColor: { value: new THREE.Color(hoverColor) }
+        },
+        transparent: true,
+        depthWrite: false
+      });
+
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(x, y, z);
+      
+      // Hook attributes for click mapping
+      mesh.userData = {
+        isPortal: true,
+        type: type,
+        url: targetUrl
+      };
+
+      cardsGroup.add(mesh);
+      return mesh;
+    }
+
+    // Build HIRE US and JOIN US interactive selection portals
+    const leftCard = buildPortalChoiceCard(
+      "HIRE US", 
+      "--> ENTER REDUCED VOID", 
+      "#00f3ff", 
+      "#0055ff", 
+      -6.5, -2.2, portalsZ, 
+      "hire", 
+      "https://github.com/hire" // Replace with actual URL
+    );
+
+    const rightCard = buildPortalChoiceCard(
+      "JOIN US", 
+      "--> TRANSMIT FREQUENCY", 
+      "#ff007f", 
+      "#ff0000", 
+      6.5, -2.2, portalsZ, 
+      "join", 
+      "" // Handled programmatically via runVoyageSequence()
+    );
+
+    // Initial count rendering
+    updateRelicCounter();
 
     // --- 7. AMBIENT DUST / STARFIELD ---
     const dustGeometry = new THREE.BufferGeometry();
@@ -646,7 +1787,7 @@
     for (let i = 0; i < dustCount * 3; i += 3) {
       dustPos[i] = (Math.random() - 0.5) * 50;     // X
       dustPos[i+1] = (Math.random() - 0.5) * 30;   // Y
-      dustPos[i+2] = -Math.random() * 150;         // Z
+      dustPos[i+2] = -Math.random() * 320;         // Z (extended deep to wrap voyage scene in floating particles)
       dustSpeeds[i/3] = 0.02 + Math.random() * 0.05;
     }
 
@@ -681,9 +1822,10 @@
     // --- 8. SMOOTH NAVIGATIONAL INERTIA ---
     let targetCameraZ = 12;
     let maxScrollZ = 12; // Adjusted dynamically when cards are appended at the front
-    let minScrollZ = -95; // Stays deep enough to view the original back cards
+    let minScrollZ = -165; // Extended past the end to display portals
 
     window.addEventListener('wheel', (e) => {
+      if (isVoyageActive) return; // Prevent zooming during sequence
       targetCameraZ -= e.deltaY * 0.04;
       targetCameraZ = Math.min(maxScrollZ, Math.max(minScrollZ, targetCameraZ));
     });
@@ -692,11 +1834,13 @@
     let touchYStart = 0;
     let isTouching = false;
     window.addEventListener('touchstart', (e) => {
+      if (isVoyageActive) return;
       touchYStart = e.touches[0].clientY;
       isTouching = true;
     });
 
     window.addEventListener('touchmove', (e) => {
+      if (isVoyageActive) return;
       if (!isTouching) return;
       const deltaY = e.touches[0].clientY - touchYStart;
       touchYStart = e.touches[0].clientY;
@@ -738,13 +1882,47 @@
         activeCard = card;
         gsap.to(card.material.uniforms.uHover, { value: 1.0, duration: 0.3 });
         card.material.uniforms.uMouseLocal.value.copy(hit.uv);
+
+        // Hover scale feedback on relative universes
+        if (card.userData.isPortal) {
+          if (card.userData.type === 'hire') {
+            gsap.to(leftUniverse.scale, { x: 1.2, y: 1.2, z: 1.2, duration: 0.4 });
+          } else if (card.userData.type === 'join') {
+            gsap.to(rightUniverse.scale, { x: 1.2, y: 1.2, z: 1.2, duration: 0.4 });
+          }
+        }
       } else {
         if (activeCard) {
           gsap.to(activeCard.material.uniforms.uHover, { value: 0.0, duration: 0.5 });
           activeCard = null;
         }
+        // Rescale universes to normal size
+        gsap.to(leftUniverse.scale, { x: 1.0, y: 1.0, z: 1.0, duration: 0.4 });
+        gsap.to(rightUniverse.scale, { x: 1.0, y: 1.0, z: 1.0, duration: 0.4 });
       }
     }
+
+    // Interactive Trigger Mechanics
+    window.addEventListener('click', () => {
+      if (isVoyageActive) return; // Ignore standard click processing while in narrative mode
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(cardsGroup.children);
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        if (hit.userData && hit.userData.isPortal) {
+          if (hit.userData.type === 'join') {
+            // Initiate deep void voyage sequence
+            runVoyageSequence();
+          } else {
+            window.open(hit.userData.url, '_blank');
+          }
+        } else if (hit.userData && hit.userData.isEngraveCard) {
+          // Centered engrave card triggers input prompt modal
+          modalOverlay.classList.add('open');
+          memoryInput.focus();
+        }
+      }
+    });
 
     // --- 10. SPARK BURST SYSTEM (ON ENGRAVING SUBMISSIONS) ---
     function triggerNeonBurst(pos) {
@@ -809,14 +1987,82 @@
 
     // --- 11. SUBMISSION MODAL PIPELINE (ENGRAVING TO FRONT) ---
     const modalOverlay = document.getElementById('modal-overlay');
-    const addBtn = document.getElementById('add-btn');
+    const connectBtn = document.getElementById('connect-btn');
     const closeBtn = document.getElementById('close-btn');
     const submitBtn = document.getElementById('submit-btn');
     const memoryInput = document.getElementById('memory-input');
+    const scrollPrompt = document.getElementById('scroll-prompt-el');
 
-    addBtn.addEventListener('click', () => {
-      modalOverlay.classList.add('open');
-      memoryInput.focus();
+    // Handle scroll depth prompt changes dynamically
+    let promptTriggered = false;
+    let choicesPromptActive = false;
+
+    function updateScrollPrompt(zPos) {
+      const threshold = -75; 
+      const choicesThreshold = -120;
+      
+      if (zPos < choicesThreshold) {
+        if (!choicesPromptActive) {
+          choicesPromptActive = true;
+          promptTriggered = false;
+          gsap.to(scrollPrompt, {
+            opacity: 0,
+            duration: 0.3,
+            onComplete: () => {
+              scrollPrompt.textContent = '[ CHOOSE A PORTAL TO INITIATE CONNECTION ]';
+              scrollPrompt.classList.remove('active-trigger', 'interactive');
+              gsap.to(scrollPrompt, { opacity: 1, duration: 0.3 });
+            }
+          });
+        }
+      } else if (zPos < threshold && !promptTriggered) {
+        promptTriggered = true;
+        choicesPromptActive = false;
+        gsap.to(scrollPrompt, {
+          opacity: 0,
+          duration: 0.3,
+          onComplete: () => {
+            scrollPrompt.textContent = '[ CLICK THE CENTER CARD TO ENGRAVE YOUR OWN MEMORY ]';
+            scrollPrompt.classList.add('active-trigger', 'interactive');
+            gsap.to(scrollPrompt, { opacity: 1, duration: 0.3 });
+          }
+        });
+      } else if (zPos >= threshold && (promptTriggered || choicesPromptActive)) {
+        promptTriggered = false;
+        choicesPromptActive = false;
+        gsap.to(scrollPrompt, {
+          opacity: 0,
+          duration: 0.3,
+          onComplete: () => {
+            scrollPrompt.textContent = '[ SCROLL OR DRAG TO EXPLORE THE VOID ]';
+            scrollPrompt.classList.remove('active-trigger', 'interactive');
+            gsap.to(scrollPrompt, { opacity: 1, duration: 0.3 });
+          }
+        });
+      }
+    }
+
+    // Redundant helper on HUD click to guarantee flawless mobile/web accessibility
+    scrollPrompt.addEventListener('click', () => {
+      if (promptTriggered) {
+        modalOverlay.classList.add('open');
+        memoryInput.focus();
+      }
+    });
+
+    // Animate camera deep past the end to portal choices on button click
+    connectBtn.addEventListener('click', () => {
+      const camTargetObj = { z: camera.position.z };
+      gsap.to(camTargetObj, {
+        z: portalsZ + 12, // perfect viewing distance of 12 units away
+        duration: 3.5,
+        ease: 'power3.inOut',
+        onUpdate: () => {
+          targetCameraZ = camTargetObj.z;
+          targetCameraX = 0;
+          targetCameraY = 0;
+        }
+      });
     });
 
     closeBtn.addEventListener('click', () => {
@@ -836,8 +2082,8 @@
       // 2. Adjust maximum scroll limit so camera can navigate forward to the new card
       maxScrollZ = firstZ + 7;
 
-      // 3. Update HUD counter
-      relicCounter.textContent = cardsGroup.children.length.toString().padStart(2, '0');
+      // 3. Update HUD counter dynamically
+      updateRelicCounter();
 
       // 4. Position the card temporarily in front of the active camera view
       const spawnZ = camera.position.z - 4;
@@ -872,6 +2118,408 @@
       });
     });
 
+    // --- 11B. DEEP SPACE VOYAGE SEQUENCE SCENARIO ROUTE ---
+    let isVoyageActive = false;
+    let voyagerDesignation = "Voyager";
+    let voyageStage = "proposal"; // proposal, captains_letter, perks_and_requirements, final_redirection
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function typeText(el, text, speed = 40, append = false, className = "") {
+      let container;
+      if (append) {
+        container = document.createElement('span');
+        if (className) container.className = className;
+        el.appendChild(container);
+      } else {
+        el.innerHTML = "";
+        container = el;
+        if (className) container.className = className;
+      }
+
+      const caret = document.createElement('span');
+      caret.className = 'terminal-caret';
+      container.appendChild(caret);
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text.charAt(i);
+        if (char === '\n') {
+          caret.insertAdjacentHTML('beforebegin', '<br>');
+        } else {
+          caret.insertAdjacentText('beforebegin', char);
+        }
+        playTickSound();
+        await delay(speed);
+      }
+      caret.remove();
+    }
+
+    async function runVoyageSequence() {
+      isVoyageActive = true;
+      voyageStage = "proposal"; 
+      initAudio(); // Warm up synth contexts just in case
+
+      // Fade out current 2D HUD interface
+      gsap.to('.hud', { opacity: 0, pointerEvents: 'none', duration: 1.2 });
+
+      // Animate Camera past portals into deep quiet void region (Z: -250)
+      gsap.to(camera.position, {
+        x: 0,
+        y: 0,
+        z: -250,
+        duration: 3.0,
+        ease: 'power3.inOut',
+        onUpdate: () => {
+          targetCameraX = 0;
+          targetCameraY = 0;
+          targetCameraZ = camera.position.z;
+        }
+      });
+
+      // Sink 3D corridor elements downward to empty the perspective completely
+      gsap.to(cardsGroup.position, { y: -30, duration: 2.2, ease: 'power2.inOut' });
+      gsap.to(leftUniverse.position, { y: -30, duration: 2.2, ease: 'power2.inOut' });
+      gsap.to(rightUniverse.position, { y: -30, duration: 2.2, ease: 'power2.inOut' });
+
+      // Wait for coordinate transition to resolve
+      await delay(2800);
+
+      // Render narrative command center
+      const overlay = document.getElementById('voyage-overlay');
+      const textEl = document.getElementById('voyage-text-content');
+      const inputGroup = document.getElementById('voyage-input-container');
+      const choicesGroup = document.getElementById('voyage-choices-container');
+      const nameInput = document.getElementById('voyage-name');
+      const terminalBox = document.getElementById('voyage-terminal-box');
+
+      // Reset components state & colors
+      terminalBox.classList.remove('pink-holo');
+      terminalBox.style.display = 'flex';
+      terminalBox.style.opacity = '1';
+      
+      overlay.classList.add('active');
+      inputGroup.classList.remove('visible');
+      choicesGroup.classList.remove('visible');
+      textEl.innerHTML = "";
+      nameInput.value = "";
+
+      // Step 1: Greeting
+      await typeText(textEl, "Hello Lonely Voyager!");
+      await delay(1500);
+
+      // Step 2: Designation Prompt
+      await typeText(textEl, "Identify yourself. Enter your designation:");
+      inputGroup.classList.add('visible');
+      nameInput.focus();
+
+      // Configure event listeners for the input submission
+      const nameSubmitBtn = document.getElementById('voyage-name-submit');
+      
+      const onDesignationSubmit = async () => {
+        const value = nameInput.value.trim();
+        voyagerDesignation = value || "Voyager";
+        
+        // Cleanup listeners
+        nameSubmitBtn.removeEventListener('click', onDesignationSubmit);
+        nameInput.removeEventListener('keydown', onKeySubmit);
+        
+        // Hide designation HUD elements
+        inputGroup.classList.remove('visible');
+        await delay(600);
+
+        // Step 3: Main Scenario Voyage Proposal
+        const proposalMsg = `${voyagerDesignation},\n\nThe VOID is looking for a team to go for a VOYAGE into the FUTURE.\n\nARE YOU INTERESTED?`;
+        await typeText(textEl, proposalMsg);
+        
+        // Display Interactive Options
+        choicesGroup.classList.add('visible');
+      };
+
+      const onKeySubmit = (e) => {
+        if (e.key === 'Enter') onDesignationSubmit();
+      };
+
+      nameSubmitBtn.addEventListener('click', onDesignationSubmit);
+      nameInput.addEventListener('keydown', onKeySubmit);
+    }
+
+    // --- 11C. VOYAGE SCENARIO STATE MANAGEMENT PIPELINE ---
+
+    // Transition Handler for Captain's Hologram Letter
+    async function renderCaptainsLetter() {
+      const textEl = document.getElementById('voyage-text-content');
+      const choicesGroup = document.getElementById('voyage-choices-container');
+      const terminalBox = document.getElementById('voyage-terminal-box');
+      choicesGroup.classList.remove('visible');
+      await delay(600);
+
+      terminalBox.classList.add('pink-holo');
+      textEl.innerHTML = ""; // Clean frame
+
+      await typeText(textEl, "Captain has sent a letter to you-\n\n", 40, true);
+      
+      const letterText = `"Hi There...!\nI'm SIDDHANT, the creator of this page\nI'm looking forward to create a team where we will LEARN, CODE and SOLVE PROBLEMS together.\n\nARE YOU WILLING TO JOIN US?"`;
+      
+      await typeText(textEl, letterText, 35, true, "hologram-transmission");
+      await delay(800);
+
+      choicesGroup.classList.add('visible');
+    }
+
+    // Transition Handler for Perks & Requirements Display
+    async function renderPerksAndRequirements() {
+      const textEl = document.getElementById('voyage-text-content');
+      const choicesGroup = document.getElementById('voyage-choices-container');
+      choicesGroup.classList.remove('visible');
+      await delay(600);
+
+      textEl.innerHTML = ""; // Clean frame
+
+      // Structural layout wrapper for styled alignment
+      const infoBox = document.createElement('div');
+      infoBox.className = 'voyage-info-box';
+      textEl.appendChild(infoBox);
+
+      // Section 1: Perks
+      const perkSec = document.createElement('div');
+      perkSec.className = 'voyage-info-section';
+      infoBox.appendChild(perkSec);
+
+      const perkTitle = document.createElement('span');
+      perkTitle.className = 'voyage-info-title';
+      perkSec.appendChild(perkTitle);
+      await typeText(perkTitle, "This is what you'll get-", 25);
+
+      const perkList = document.createElement('ul');
+      perkList.className = 'voyage-info-list';
+      perkSec.appendChild(perkList);
+
+      const perks = [
+        "Absolute guide to becoming a FULL STACK MERN DEVELOPER",
+        "A team of LOGIC BUILDERS to learn and grow together",
+        "Passes to HACKATHONS and other programs",
+        "A real life helper to solve all your queries"
+      ];
+
+      for (let i = 0; i < perks.length; i++) {
+        const li = document.createElement('li');
+        perkList.appendChild(li);
+        await typeText(li, perks[i], 15);
+      }
+
+      await delay(500);
+
+      // Section 2: Requirements
+      const reqSec = document.createElement('div');
+      reqSec.className = 'voyage-info-section';
+      infoBox.appendChild(reqSec);
+
+      const reqTitle = document.createElement('span');
+      reqTitle.className = 'voyage-info-title';
+      reqSec.appendChild(reqTitle);
+      await typeText(reqTitle, "This is what I want from you-", 25);
+
+      const reqList = document.createElement('ul');
+      reqList.className = 'voyage-info-list';
+      reqSec.appendChild(reqList);
+
+      const requirements = [
+        "Consistency",
+        "Determination",
+        "Faith",
+        "Collaborative Thinking"
+      ];
+
+      for (let i = 0; i < requirements.length; i++) {
+        const li = document.createElement('li');
+        reqList.appendChild(li);
+        await typeText(li, requirements[i], 15);
+      }
+
+      await delay(800);
+
+      // Question Prompt
+      const questionPrompt = document.createElement('div');
+      questionPrompt.style.marginTop = '15px';
+      questionPrompt.style.fontWeight = 'bold';
+      textEl.appendChild(questionPrompt);
+      await typeText(questionPrompt, "ARE YOU WILLING TO PROCEED?", 40);
+      
+      await delay(500);
+      choicesGroup.classList.add('visible');
+    }
+
+    // Transition Handler for Final Redirection Target
+    async function renderFinalRedirection() {
+      const textEl = document.getElementById('voyage-text-content');
+      const choicesGroup = document.getElementById('voyage-choices-container');
+      const terminalBox = document.getElementById('voyage-terminal-box');
+      choicesGroup.classList.remove('visible');
+      await delay(600);
+
+      textEl.innerHTML = ""; // Clean frame
+
+      await typeText(textEl, "Alright Dreamer, ASTRIK will help you reach me", 40);
+      await delay(1200);
+
+      // Tap to Continue Pulsing Trigger Button
+      const tapBtn = document.createElement('button');
+      tapBtn.className = 'voyage-btn tap-continue-btn';
+      tapBtn.textContent = 'TAP TO CONTINUE';
+      tapBtn.style.marginTop = '25px';
+      tapBtn.style.alignSelf = 'center';
+      tapBtn.style.opacity = 0;
+      textEl.appendChild(tapBtn);
+
+      gsap.to(tapBtn, { opacity: 1, duration: 0.5 });
+
+      const onContinueTap = () => {
+        tapBtn.removeEventListener('click', onContinueTap);
+        
+        // 1. Zoom Camera deep into the center void
+        const zoomDuration = 1.5;
+        gsap.to(camera.position, {
+          z: -285,
+          duration: zoomDuration,
+          ease: 'power3.inOut',
+          onUpdate: () => {
+            targetCameraZ = camera.position.z;
+          }
+        });
+
+        // 2. Smoothly fade out the terminal narrative screen
+        gsap.to('#voyage-overlay', {
+          opacity: 0,
+          duration: 0.8,
+          onComplete: () => {
+            document.getElementById('voyage-overlay').classList.remove('active');
+            document.getElementById('voyage-overlay').style.opacity = ''; // reset styling
+          }
+        });
+
+        // 3. Fade and reveal the responsive glassmorphic Contacts Page
+        setTimeout(() => {
+          document.getElementById('contact-screen-overlay').classList.add('open');
+        }, zoomDuration * 1000 - 300);
+
+        tapBtn.remove();
+      };
+
+      tapBtn.addEventListener('click', onContinueTap);
+    }
+
+    // Standard Universal 'NO' Funnel Handler (renders within compact hologram terminal)
+    async function handleNoChoice() {
+      const textEl = document.getElementById('voyage-text-content');
+      const choicesGroup = document.getElementById('voyage-choices-container');
+      const terminalBox = document.getElementById('voyage-terminal-box');
+      
+      choicesGroup.classList.remove('visible');
+      await delay(600);
+
+      textEl.innerHTML = "";
+      await typeText(textEl, "You're a man with a free will, you're free to go wherever you like;");
+      await delay(3200);
+
+      // Clean frames and transition to thank you inside the 3D hologram itself
+      textEl.innerHTML = "";
+      
+      const thankYouDiv = document.createElement('div');
+      thankYouDiv.style.fontSize = '1.15rem';
+      thankYouDiv.style.letterSpacing = '3px';
+      thankYouDiv.style.color = 'var(--color-neon-pink)';
+      thankYouDiv.style.textShadow = '0 0 12px rgba(255, 0, 127, 0.7)';
+      thankYouDiv.style.textAlign = 'center';
+      thankYouDiv.style.fontWeight = 'bold';
+      thankYouDiv.style.margin = '15px 0';
+      textEl.appendChild(thankYouDiv);
+
+      await typeText(thankYouDiv, "THANK YOU FOR JOINING THE VOYAGE", 50);
+      await delay(1500);
+
+      // Restore system button inside the hologram
+      const restoreBtn = document.createElement('button');
+      restoreBtn.className = 'voyage-btn pink';
+      restoreBtn.textContent = 'RESTORE SYSTEM CORE';
+      restoreBtn.style.marginTop = '20px';
+      restoreBtn.style.alignSelf = 'center';
+      restoreBtn.style.opacity = 0;
+      textEl.appendChild(restoreBtn);
+
+      gsap.to(restoreBtn, { opacity: 1, duration: 0.5 });
+      
+      const onRestore = () => {
+        restoreBtn.removeEventListener('click', onRestore);
+        exitVoyageScreen();
+      };
+      restoreBtn.addEventListener('click', onRestore);
+    }
+
+    // Wire Interactive YES Event Handler dynamically based on system state
+    document.getElementById('voyage-yes').addEventListener('click', () => {
+      if (voyageStage === "proposal") {
+        voyageStage = "captains_letter";
+        renderCaptainsLetter();
+      } else if (voyageStage === "captains_letter") {
+        voyageStage = "perks_and_requirements";
+        renderPerksAndRequirements();
+      } else if (voyageStage === "perks_and_requirements") {
+        voyageStage = "final_redirection";
+        renderFinalRedirection();
+      }
+    });
+
+    // Wire Interactive NO Event Handler (Directly triggers funnel from any stage)
+    document.getElementById('voyage-no').addEventListener('click', () => {
+      handleNoChoice();
+    });
+
+    // Close contact overlay and return to standard loop
+    document.getElementById('back-void-btn').addEventListener('click', () => {
+      document.getElementById('contact-screen-overlay').classList.remove('open');
+      exitVoyageScreen();
+    });
+
+    // Restore original WebGL environment and overlay styles
+    function exitVoyageScreen() {
+      isVoyageActive = false;
+      document.getElementById('voyage-overlay').classList.remove('active');
+
+      // Clear layout elements inside terminal
+      document.getElementById('voyage-text-content').innerHTML = "";
+
+      // Bring normal 3D elements back to life
+      gsap.to(cardsGroup.position, { y: 0, duration: 2.0, ease: 'power2.out' });
+      gsap.to(leftUniverse.position, { y: 0.8, duration: 2.0, ease: 'power2.out' });
+      gsap.to(rightUniverse.position, { y: 0.8, duration: 2.0, ease: 'power2.out' });
+
+      // Reposition camera nicely back at selection portal coordinate thresholds
+      targetCameraZ = portalsZ + 12;
+      targetCameraX = 0;
+      targetCameraY = 0;
+
+      // Bring standard HUD components back online
+      gsap.to('.hud', { opacity: 1, pointerEvents: 'auto', duration: 1.0 });
+    }
+
+    // Wire Contact Form submissions
+    document.getElementById('cyber-contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('contact-name').value.trim();
+      const email = document.getElementById('contact-email').value.trim();
+      const message = document.getElementById('contact-message').value.trim();
+
+      const recipient = "siddhantsolves@gmail.com";
+      const subject = encodeURIComponent("VOID");
+      const bodyContent = `Sender: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
+      const body = encodeURIComponent(bodyContent);
+
+      window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+    });
+
     // --- 12. RUNTIME ANIMATION LOOP ---
     const clock = new THREE.Clock();
 
@@ -883,6 +2531,20 @@
       camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetCameraZ, 0.06);
       camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetCameraX, 0.06);
       camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetCameraY, 0.06);
+
+      // Smoothly update prompt based on camera depth
+      updateScrollPrompt(camera.position.z);
+
+      // Spin Universe Visual Systems
+      leftUniverse.rotation.y += 0.005;
+      blueCore.rotation.y -= 0.008;
+      blueRing.rotation.z += 0.012;
+      leftParticles.rotation.y += 0.002;
+
+      rightUniverse.rotation.y -= 0.004;
+      redCore.rotation.x += 0.006;
+      redCage.rotation.y -= 0.01;
+      rightParticles.rotation.y -= 0.002;
 
       // Update shader uniforms
       cardsGroup.children.forEach(card => {
@@ -896,7 +2558,7 @@
       for (let i = 2; i < positions.length; i += 3) {
         positions[i] += dustSpeeds[(i-2)/3]; // Slowly push forward
         if (positions[i] > firstZ + 15) {
-          positions[i] = -150; // Wrap around relative to front boundary
+          positions[i] = -320; // Wrap around relative to extended deep voyage boundary
         }
       }
       dustGeometry.attributes.position.needsUpdate = true;
