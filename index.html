@@ -310,7 +310,6 @@
       pointer-events: auto;
     }
 
-    /* Compact 3D Floating Hologram Container */
     .voyage-terminal {
       width: 90%;
       max-width: 440px;
@@ -326,14 +325,11 @@
       gap: 18px;
       position: relative;
       overflow: hidden;
-
-      /* 3D Angled Matrix Projection */
       transform: perspective(1000px) rotateX(7deg) rotateY(-10deg) translateZ(40px);
       animation: holo-float 4s infinite ease-in-out;
       transition: border-color 0.8s, background-color 0.8s, box-shadow 0.8s;
     }
 
-    /* Scanline Matrix Overlay inside Hologram */
     .voyage-terminal::before {
       content: '';
       position: absolute;
@@ -346,7 +342,6 @@
       z-index: 2;
     }
 
-    /* Dynamic Holographic Shift to Neon Pink */
     .voyage-terminal.pink-holo {
       border-color: rgba(255, 0, 127, 0.5);
       background: rgba(255, 0, 127, 0.03);
@@ -456,7 +451,6 @@
       vertical-align: middle;
     }
 
-    /* --- Dynamic Hologram & Lists Styling --- */
     .hologram-transmission {
       display: block;
       border-left: 2px solid var(--color-neon-cyan);
@@ -543,7 +537,7 @@
       box-shadow: 0 0 12px rgba(255, 0, 127, 0.6);
     }
 
-    /* --- Integrated Contacts Screen Overlay --- */
+    /* --- Contact Screen Overlay --- */
     .contact-screen-overlay {
       position: fixed;
       top: 0;
@@ -570,7 +564,6 @@
       transform: scale(1);
     }
 
-    /* Ambient Glows Inside Overlay */
     .contact-bg-glow-cyan {
       position: absolute;
       width: 600px;
@@ -612,7 +605,6 @@
       }
     }
 
-    /* Left Column Details */
     .contact-left-col {
       display: flex;
       flex-direction: column;
@@ -656,14 +648,13 @@
       text-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
     }
 
-    .contact-left-col p.contact-desc {
+    .contact-desc {
       font-size: 0.9rem;
       color: #a0a0b0;
       line-height: 1.6;
       max-width: 450px;
     }
 
-    /* Cards */
     .contact-list-cards {
       display: flex;
       flex-direction: column;
@@ -756,7 +747,6 @@
       transform: rotate(45deg);
     }
 
-    /* Form Styles */
     .contact-form-container {
       background: rgba(8, 8, 12, 0.5);
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -933,7 +923,6 @@
       margin-top: 20px;
     }
 
-    /* Phase 2: Final Return-to-VOID Action */
     .final-return-btn {
       background: transparent;
       border: 1px solid var(--color-neon-cyan);
@@ -959,7 +948,7 @@
       transform: translateY(-2px);
     }
 
-    /* --- Phase 3: HIRE US Cinematic Intake System --- */
+    /* --- Phase 3 & Visual Upgrade: HIRE US Holographic System --- */
     .hire-intake-overlay {
       position: fixed;
       top: 0;
@@ -967,16 +956,18 @@
       width: 100%;
       height: 100%;
       z-index: 25;
-      background: rgba(3, 3, 5, 0.88);
-      backdrop-filter: blur(16px);
+      background: radial-gradient(circle at center, rgba(3, 8, 16, 0.88) 0%, rgba(3, 3, 5, 0.94) 100%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       display: flex;
       justify-content: center;
       align-items: center;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.8s ease;
-      padding: 30px 20px;
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 40px 20px;
       overflow-y: auto;
+      perspective: 1200px;
     }
 
     .hire-intake-overlay.active {
@@ -984,44 +975,63 @@
       pointer-events: auto;
     }
 
-    .hire-terminal {
+    /* Dedicated Float Stage: Prevents Interactive Tilt From Overwriting Float Keyframes */
+    .hire-float-wrapper {
       width: 100%;
       max-width: 680px;
-      background: rgba(6, 10, 18, 0.82);
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      will-change: transform;
+      animation: hire-holo-float 6s infinite ease-in-out;
+    }
+
+    .hire-terminal {
+      width: 100%;
+      background: rgba(6, 11, 20, 0.86);
       border: 1px solid rgba(0, 243, 255, 0.35);
       border-radius: 16px;
       padding: 36px;
       position: relative;
-      box-shadow: 0 0 40px rgba(0, 243, 255, 0.12), inset 0 0 20px rgba(0, 243, 255, 0.03);
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        0 0 35px rgba(0, 243, 255, 0.12),
+        inset 0 0 25px rgba(0, 243, 255, 0.04);
       display: flex;
       flex-direction: column;
       gap: 22px;
-      margin: auto;
-      transform: translateY(15px);
-      transition: transform 0.5s ease;
+      transform-style: preserve-3d;
+      will-change: transform, box-shadow;
+      transition: border-color 0.4s ease, box-shadow 0.4s ease;
     }
 
-    .hire-intake-overlay.active .hire-terminal {
-      transform: translateY(0);
+    .hire-terminal:hover {
+      border-color: rgba(0, 243, 255, 0.5);
+      box-shadow: 
+        0 25px 60px rgba(0, 0, 0, 0.7),
+        0 0 45px rgba(0, 243, 255, 0.2),
+        inset 0 0 30px rgba(0, 243, 255, 0.06);
     }
 
     .hire-terminal::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-                  linear-gradient(90deg, rgba(0, 243, 255, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 243, 255, 0.02));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%),
+                  linear-gradient(90deg, rgba(0, 243, 255, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 243, 255, 0.03));
       background-size: 100% 4px, 6px 100%;
       pointer-events: none;
-      opacity: 0.6;
+      opacity: 0.65;
       border-radius: 16px;
+      z-index: 1;
     }
 
     .hire-terminal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+      border-bottom: 1px solid rgba(0, 243, 255, 0.18);
       padding-bottom: 14px;
       position: relative;
       z-index: 2;
@@ -1256,7 +1266,6 @@
       box-shadow: none;
     }
 
-    /* Summary Presentation Screen */
     .hire-summary-list {
       display: flex;
       flex-direction: column;
@@ -1343,7 +1352,18 @@
       color: #ffaa00;
     }
 
-    /* Perspective Hover Drift keyframes */
+    /* Continuous Gentle Float Animation */
+    @keyframes hire-holo-float {
+      0%, 100% {
+        transform: translateY(0px) rotateZ(0deg);
+        filter: drop-shadow(0 10px 20px rgba(0, 243, 255, 0.08));
+      }
+      50% {
+        transform: translateY(-8px) rotateZ(0.2deg);
+        filter: drop-shadow(0 18px 30px rgba(0, 243, 255, 0.16));
+      }
+    }
+
     @keyframes holo-float {
       0%, 100% {
         transform: perspective(1000px) rotateX(7deg) rotateY(-10deg) translateZ(40px) translateY(0);
@@ -1363,6 +1383,18 @@
     @keyframes pulse {
       0%, 100% { opacity: 0.3; }
       50% { opacity: 0.8; }
+    }
+
+    /* Accessibility Safeguard: Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      .hire-float-wrapper,
+      .voyage-terminal {
+        animation: none !important;
+      }
+      .hire-terminal {
+        transform: none !important;
+        transition: none !important;
+      }
     }
 
     @media (max-width: 768px) {
@@ -1524,7 +1556,6 @@
 
       <!-- Right Section: Interactive Terminal Form -->
       <form id="cyber-contact-form" class="contact-form-container">
-        
         <div class="contact-input-wrapper">
           <label for="contact-name">Name</label>
           <input type="text" id="contact-name" class="contact-form-input" placeholder="Your identification..." required autocomplete="off">
@@ -1546,7 +1577,6 @@
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
           </svg>
         </button>
-
       </form>
 
     </div>
@@ -1566,19 +1596,21 @@
     </div>
   </div>
 
-  <!-- Phase 3: HIRE US Cinematic Project Intake Overlay -->
+  <!-- Phase 3 & Visual Upgrade: HIRE US Holographic Intake Overlay -->
   <div class="hire-intake-overlay" id="hire-intake-overlay" role="dialog" aria-modal="true" aria-label="HIRE US Project Intake">
-    <div class="hire-terminal" id="hire-terminal">
-      <div class="hire-terminal-header">
-        <div class="hire-step-badge" id="hire-step-badge">
-          <div class="hire-step-dot"></div>
-          <span id="hire-step-tracker">INITIATE // HIRE_US</span>
+    <div class="hire-float-wrapper" id="hire-float-wrapper">
+      <div class="hire-terminal" id="hire-terminal">
+        <div class="hire-terminal-header">
+          <div class="hire-step-badge" id="hire-step-badge">
+            <div class="hire-step-dot"></div>
+            <span id="hire-step-tracker">INITIATE // HIRE_US</span>
+          </div>
+          <button class="hire-btn-cancel" id="hire-btn-cancel" aria-label="Exit intake and return to VOID">ESC // RETURN</button>
         </div>
-        <button class="hire-btn-cancel" id="hire-btn-cancel" aria-label="Exit intake and return to VOID">ESC // RETURN</button>
-      </div>
 
-      <div class="hire-content-area" id="hire-content-area">
-        <!-- Rendered dynamically via renderHireStep() -->
+        <div class="hire-content-area" id="hire-content-area">
+          <!-- Rendered dynamically via renderHireStep() -->
+        </div>
       </div>
     </div>
   </div>
@@ -1645,7 +1677,6 @@
       mainOsc.start();
     }
 
-    // High fidelity typewriter sound effect
     function playTickSound() {
       if (!isAudioPlaying || !audioCtx) return;
       try {
@@ -1763,36 +1794,7 @@
       }
     `;
 
-    // --- 4B. ISOLATED SHADERS FOR SELECTION PORTAL CARDS ---
-    const portalVertexShader = `
-      uniform float uTime;
-      uniform float uHover;
-      uniform vec2 uMouseLocal;
-      varying vec2 vUv;
-      varying float vDistToMouse;
-
-      void main() {
-        vUv = uv;
-        vec3 pos = position;
-
-        float waveX = sin(pos.y * 1.5 + uTime * 0.8) * 0.04;
-        float waveY = cos(pos.x * 1.5 + uTime * 0.8) * 0.04;
-        pos.x += waveX;
-        pos.y += waveY;
-
-        if (uHover > 0.0) {
-          float dist = distance(uv, uMouseLocal);
-          vDistToMouse = dist;
-          float force = smoothstep(0.4, 0.0, dist) * uHover;
-          pos.z += force * 0.22;
-          pos.z += sin(dist * 25.0 - uTime * 6.0) * force * 0.03;
-        } else {
-          vDistToMouse = 999.0;
-        }
-
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-      }
-    `;
+    const portalVertexShader = vertexShader;
 
     const portalFragmentShader = `
       uniform sampler2D uTexture;
@@ -1833,7 +1835,7 @@
       }
     `;
 
-    // --- 5. HIGH-RESOLUTION CANVAS TEXTURE CONSTRUCTOR ---
+    // --- 5. TEXTURE BUILDERS ---
     function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
       const words = text.split(' ');
       let line = '';
@@ -1908,7 +1910,6 @@
       return texture;
     }
 
-    // --- 5B. ENGRAVING TERMINAL CANVAS TEXTURE CONSTRUCTOR ---
     function generateEngraveTexture() {
       const canvas = document.createElement('canvas');
       canvas.width = 1024;
@@ -1955,7 +1956,7 @@
       return texture;
     }
 
-    // --- 6. ADD MEMORY TO SPACE ---
+    // --- 6. ADD MEMORY CARDS ---
     let firstZ = 5;
     let cardSideToggleFront = true;
 
@@ -2005,7 +2006,6 @@
       });
 
       const mesh = new THREE.Mesh(geometry, material);
-
       const targetZ = firstZ + 13;
       firstZ = targetZ;
 
@@ -2024,13 +2024,12 @@
     });
 
     const relicCounter = document.getElementById('relic-count');
-    
     function updateRelicCounter() {
       const count = cardsGroup.children.filter(child => !child.userData.isPortal && !child.userData.isEngraveCard).length;
       relicCounter.textContent = count.toString().padStart(2, '0');
     }
 
-    // --- 6B. ENGRAVING TERMINAL CARD SETUP ---
+    // --- 6B. ENGRAVING TERMINAL SETUP ---
     const engraveCardZ = -105;
     const engraveTexture = generateEngraveTexture();
     const engraveGeometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
@@ -2052,15 +2051,13 @@
 
     const engraveMesh = new THREE.Mesh(engraveGeometry, engraveMaterial);
     engraveMesh.position.set(0, 0, engraveCardZ);
-    engraveMesh.userData = {
-      isEngraveCard: true
-    };
+    engraveMesh.userData = { isEngraveCard: true };
     cardsGroup.add(engraveMesh);
 
-    // --- 6C. THE RED AND BLUE UNIVERSES PAST THE END ---
+    // --- 6C. LIVING PORTAL WORLDS ---
     const portalsZ = -145;
 
-    // Left Blue Universe Group
+    // Left Blue Universe Group (HIRE US Portal)
     const leftUniverse = new THREE.Group();
     leftUniverse.position.set(-6.5, 0.8, portalsZ);
     scene.add(leftUniverse);
@@ -2089,7 +2086,7 @@
     const leftPartGeo = new THREE.BufferGeometry();
     const leftPartCount = 180;
     const leftPartPos = new Float32Array(leftPartCount * 3);
-    for(let i=0; i<leftPartCount*3; i+=3) {
+    for (let i = 0; i < leftPartCount * 3; i += 3) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2.0 * Math.random() - 1.0);
       const r = 2.0 + Math.random() * 1.5;
@@ -2108,7 +2105,7 @@
     const leftParticles = new THREE.Points(leftPartGeo, leftPartMat);
     leftUniverse.add(leftParticles);
 
-    // Right Red Universe Group
+    // Right Red Universe Group (JOIN US Portal)
     const rightUniverse = new THREE.Group();
     rightUniverse.position.set(6.5, 0.8, portalsZ);
     scene.add(rightUniverse);
@@ -2136,7 +2133,7 @@
     const rightPartGeo = new THREE.BufferGeometry();
     const rightPartCount = 180;
     const rightPartPos = new Float32Array(rightPartCount * 3);
-    for(let i=0; i<rightPartCount*3; i+=3) {
+    for (let i = 0; i < rightPartCount * 3; i += 3) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2.0 * Math.random() - 1.0);
       const r = 2.0 + Math.random() * 1.5;
@@ -2155,7 +2152,7 @@
     const rightParticles = new THREE.Points(rightPartGeo, rightPartMat);
     rightUniverse.add(rightParticles);
 
-    // --- 6D. GENERATE PORTAL / INTERACTIVE CHOICE CARDS ---
+    // --- 6D. PORTAL CARDS ---
     function buildPortalChoiceCard(text, subtitle, mainColor, hoverColor, x, y, z, type, targetUrl) {
       const canvas = document.createElement('canvas');
       canvas.width = 1024;
@@ -2194,7 +2191,6 @@
       texture.minFilter = THREE.LinearFilter;
 
       const geometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
-      
       const material = new THREE.ShaderMaterial({
         vertexShader: portalVertexShader,
         fragmentShader: portalFragmentShader,
@@ -2212,41 +2208,17 @@
 
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(x, y, z);
-      
-      mesh.userData = {
-        isPortal: true,
-        type: type,
-        url: targetUrl
-      };
+      mesh.userData = { isPortal: true, type, url: targetUrl };
 
       cardsGroup.add(mesh);
       return mesh;
     }
 
-    // Phase 3: HIRE US portal routes to dedicated cinematic intake
-    const leftCard = buildPortalChoiceCard(
-      "HIRE US", 
-      "--> ENTER REDUCED VOID", 
-      "#00f3ff", 
-      "#0055ff", 
-      -6.5, -2.2, portalsZ, 
-      "hire", 
-      ""
-    );
-
-    const rightCard = buildPortalChoiceCard(
-      "JOIN US", 
-      "--> TRANSMIT FREQUENCY", 
-      "#ff007f", 
-      "#ff0000", 
-      6.5, -2.2, portalsZ, 
-      "join", 
-      ""
-    );
-
+    buildPortalChoiceCard("HIRE US", "--> ENTER REDUCED VOID", "#00f3ff", "#0055ff", -6.5, -2.2, portalsZ, "hire", "");
+    buildPortalChoiceCard("JOIN US", "--> TRANSMIT FREQUENCY", "#ff007f", "#ff0000", 6.5, -2.2, portalsZ, "join", "");
     updateRelicCounter();
 
-    // --- 7. AMBIENT DUST / STARFIELD ---
+    // --- 7. AMBIENT DUST / LIVING STARFIELD ---
     const dustGeometry = new THREE.BufferGeometry();
     const dustCount = 1800;
     const dustPos = new Float32Array(dustCount * 3);
@@ -2291,6 +2263,7 @@
     let maxScrollZ = 12;
     let minScrollZ = -165;
     let isHireActive = false;
+    let isVoyageActive = false;
 
     window.addEventListener('wheel', (e) => {
       if (isVoyageActive || isHireActive) return;
@@ -2366,7 +2339,6 @@
       }
     }
 
-    // Phase 1 + Phase 2 + Phase 3 Portal Click Dispatcher
     window.addEventListener('click', (e) => {
       if (isVoyageActive || isHireActive) return;
       if (e.target !== canvas) return;
@@ -2395,7 +2367,7 @@
       const positions = new Float32Array(count * 3);
       const targets = [];
 
-      for(let i=0; i<count; i++) {
+      for (let i = 0; i < count; i++) {
         positions[i*3] = pos.x;
         positions[i*3+1] = pos.y;
         positions[i*3+2] = pos.z;
@@ -2433,7 +2405,7 @@
         duration: 1.8,
         ease: 'power3.out',
         onUpdate: () => {
-          for(let i=0; i<count; i++) {
+          for (let i = 0; i < count; i++) {
             arr[i*3] = THREE.MathUtils.lerp(pos.x, targets[i].x, anim.progress);
             arr[i*3+1] = THREE.MathUtils.lerp(pos.y, targets[i].y, anim.progress);
             arr[i*3+2] = THREE.MathUtils.lerp(pos.z, targets[i].z, anim.progress);
@@ -2588,7 +2560,6 @@
     });
 
     // --- 11B. DEEP SPACE VOYAGE SEQUENCE SCENARIO ROUTE ---
-    let isVoyageActive = false;
     let voyagerDesignation = "Voyager";
     let voyageStage = "proposal";
 
@@ -2701,7 +2672,6 @@
       nameInput.addEventListener('keydown', onKeySubmit);
     }
 
-    // --- 11C. VOYAGE SCENARIO STATE MANAGEMENT PIPELINE ---
     async function renderCaptainsLetter() {
       const textEl = document.getElementById('voyage-text-content');
       const choicesGroup = document.getElementById('voyage-choices-container');
@@ -2713,9 +2683,7 @@
       textEl.innerHTML = "";
 
       await typeText(textEl, "Captain has sent a letter to you-\n\n", 40, true);
-      
       const letterText = `"Hi There...!\nI'm SIDDHANT, the creator of this page\nI'm looking forward to create a team where we will LEARN, CODE and SOLVE PROBLEMS together.\n\nARE YOU WILLING TO JOIN US?"`;
-      
       await typeText(textEl, letterText, 35, true, "hologram-transmission");
       await delay(800);
 
@@ -2803,7 +2771,6 @@
     async function renderFinalRedirection() {
       const textEl = document.getElementById('voyage-text-content');
       const choicesGroup = document.getElementById('voyage-choices-container');
-      const terminalBox = document.getElementById('voyage-terminal-box');
       choicesGroup.classList.remove('visible');
       await delay(600);
 
@@ -2857,7 +2824,6 @@
     async function handleNoChoice() {
       const textEl = document.getElementById('voyage-text-content');
       const choicesGroup = document.getElementById('voyage-choices-container');
-      const terminalBox = document.getElementById('voyage-terminal-box');
       
       choicesGroup.classList.remove('visible');
       await delay(600);
@@ -2875,7 +2841,6 @@
       thankYouDiv.style.textShadow = '0 0 12px rgba(255, 0, 127, 0.7)';
       thankYouDiv.style.textAlign = 'center';
       thankYouDiv.style.fontWeight = 'bold';
-      thankYouDiv.margin = '15px 0';
       textEl.appendChild(thankYouDiv);
 
       await typeText(thankYouDiv, "THANK YOU FOR JOINING THE VOYAGE", 50);
@@ -3055,19 +3020,18 @@
       });
 
       gsap.to('.hud', { opacity: 1, pointerEvents: 'auto', duration: 1.2 });
-
       isVoyageActive = false;
       voyageStage = "proposal";
     }
 
     document.getElementById('final-return-btn').addEventListener('click', returnToVoidFromFinal);
 
-    // --- 11D. PHASE 3: HIRE US CINEMATIC PROJECT INTAKE ENGINE ---
+    // --- 11D. PHASE 3 & VISUAL UPGRADE: HIRE US INTAKE ENGINE ---
     const HIRE_RECIPIENT_EMAIL = "siddhantsolves@gmail.com";
 
     const hireState = {
       isOpen: false,
-      step: 0, // 0 = intro, 1..7 = steps, 8 = review summary
+      step: 0,
       projectType: '',
       description: '',
       followUp: '',
@@ -3078,6 +3042,15 @@
       copied: false
     };
 
+    // Parallax Tilt State for HIRE US Terminal
+    const hireTilt = {
+      currentX: 0,
+      currentY: 0,
+      targetX: 0,
+      targetY: 0,
+      rafId: null
+    };
+
     function startHireIntakeSequence() {
       isHireActive = true;
       hireState.isOpen = true;
@@ -3085,6 +3058,7 @@
 
       gsap.to('.hud', { opacity: 0, pointerEvents: 'none', duration: 0.8 });
 
+      // Dramatic cinematic camera glide toward left portal
       gsap.to(camera.position, {
         x: -3.5,
         y: 0,
@@ -3104,14 +3078,37 @@
 
       setTimeout(() => {
         const overlay = document.getElementById('hire-intake-overlay');
+        const terminal = document.getElementById('hire-terminal');
         overlay.classList.add('active');
+        
+        // Smooth entrance reveal
+        gsap.fromTo(terminal, 
+          { scale: 0.94, opacity: 0, y: 24 },
+          { scale: 1.0, opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
+        );
+
         renderHireStep(hireState.step || 0);
-      }, 900);
+        enableHireParallax();
+      }, 700);
     }
 
     function exitHireIntake() {
       const overlay = document.getElementById('hire-intake-overlay');
-      overlay.classList.remove('active');
+      const terminal = document.getElementById('hire-terminal');
+
+      disableHireParallax();
+
+      gsap.to(terminal, {
+        scale: 0.96,
+        opacity: 0,
+        y: 15,
+        duration: 0.45,
+        ease: 'power2.in',
+        onComplete: () => {
+          overlay.classList.remove('active');
+          gsap.set(terminal, { clearProps: 'transform,opacity,scale,y' });
+        }
+      });
 
       gsap.killTweensOf(camera.position);
 
@@ -3145,6 +3142,67 @@
     }
 
     document.getElementById('hire-btn-cancel').addEventListener('click', exitHireIntake);
+
+    // Pointer-Based Tilt Controller
+    function onHireMouseMove(e) {
+      if (!isHireActive) return;
+      const overlay = document.getElementById('hire-intake-overlay');
+      const rect = overlay.getBoundingClientRect();
+      const nx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const ny = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+
+      // Restrained, subtle angles (clamped to max ±4.5deg)
+      hireTilt.targetX = -ny * 4.5;
+      hireTilt.targetY = nx * 5.0;
+    }
+
+    function onHireMouseLeave() {
+      hireTilt.targetX = 0;
+      hireTilt.targetY = 0;
+    }
+
+    function updateHireTiltLoop() {
+      if (!isHireActive) return;
+      const terminal = document.getElementById('hire-terminal');
+      if (terminal) {
+        hireTilt.currentX += (hireTilt.targetX - hireTilt.currentX) * 0.08;
+        hireTilt.currentY += (hireTilt.targetY - hireTilt.currentY) * 0.08;
+        terminal.style.transform = `perspective(1000px) rotateX(${hireTilt.currentX.toFixed(2)}deg) rotateY(${hireTilt.currentY.toFixed(2)}deg)`;
+      }
+      hireTilt.rafId = requestAnimationFrame(updateHireTiltLoop);
+    }
+
+    function enableHireParallax() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) return;
+
+      const overlay = document.getElementById('hire-intake-overlay');
+      overlay.addEventListener('mousemove', onHireMouseMove, { passive: true });
+      overlay.addEventListener('mouseleave', onHireMouseLeave, { passive: true });
+      if (!hireTilt.rafId) {
+        hireTilt.rafId = requestAnimationFrame(updateHireTiltLoop);
+      }
+    }
+
+    function disableHireParallax() {
+      const overlay = document.getElementById('hire-intake-overlay');
+      if (overlay) {
+        overlay.removeEventListener('mousemove', onHireMouseMove);
+        overlay.removeEventListener('mouseleave', onHireMouseLeave);
+      }
+      if (hireTilt.rafId) {
+        cancelAnimationFrame(hireTilt.rafId);
+        hireTilt.rafId = null;
+      }
+      hireTilt.currentX = 0;
+      hireTilt.currentY = 0;
+      hireTilt.targetX = 0;
+      hireTilt.targetY = 0;
+      const terminal = document.getElementById('hire-terminal');
+      if (terminal) {
+        terminal.style.transform = '';
+      }
+    }
 
     function getFollowUpConfig(type) {
       switch (type) {
@@ -3806,7 +3864,7 @@
       }
     }
 
-    // Wire Contact Form submissions
+    // Wire Contact Form transmissions
     document.getElementById('cyber-contact-form').addEventListener('submit', function(e) {
       e.preventDefault();
 
@@ -3820,47 +3878,72 @@
       const body = encodeURIComponent(bodyContent);
 
       window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, '_blank');
-        
       playDissolveTransition(name);
     });
 
-    // --- 12. RUNTIME ANIMATION LOOP ---
+    // --- 12. RUNTIME ANIMATION LOOP (LIVING CINEMATIC SPACE) ---
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
+      // Camera lerp inertia
       camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetCameraZ, 0.06);
       camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetCameraX, 0.06);
       camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetCameraY, 0.06);
 
       updateScrollPrompt(camera.position.z);
 
-      leftUniverse.rotation.y += 0.005;
+      // Living Portal Energy Harmonics
+      const approachProximity = THREE.MathUtils.smoothstep(camera.position.z, -50, -145);
+      const energyPulse = Math.sin(elapsedTime * 1.8) * 0.04;
+      const energyPulseOffset = Math.cos(elapsedTime * 1.6) * 0.04;
+
+      // Left Blue Universe Living Motions
+      leftUniverse.rotation.y += 0.005 + approachProximity * 0.004;
       blueCore.rotation.y -= 0.008;
+      blueCore.rotation.x = Math.sin(elapsedTime * 0.8) * 0.15;
+      blueCore.scale.setScalar(1.0 + energyPulse);
       blueRing.rotation.z += 0.012;
+      blueRing.rotation.x = (Math.PI / 1.8) + Math.sin(elapsedTime * 0.9) * 0.08;
       leftParticles.rotation.y += 0.002;
 
-      rightUniverse.rotation.y -= 0.004;
+      // Right Red Universe Living Motions
+      rightUniverse.rotation.y -= 0.004 + approachProximity * 0.004;
       redCore.rotation.x += 0.006;
+      redCore.rotation.z = Math.cos(elapsedTime * 0.7) * 0.15;
+      redCore.scale.setScalar(1.0 + energyPulseOffset);
       redCage.rotation.y -= 0.01;
+      redCage.rotation.x = Math.sin(elapsedTime * 0.6) * 0.1;
       rightParticles.rotation.y -= 0.002;
 
+      // Center Engraving Terminal Ambient Glow Oscillation
+      if (engraveMesh && engraveMesh.material && engraveMesh.material.uniforms) {
+        const pulseGlow = 0.85 + Math.sin(elapsedTime * 2.0) * 0.15;
+        engraveMesh.material.uniforms.uColor.value.setRGB(1.0 * pulseGlow, 0.0, 0.5 * pulseGlow);
+      }
+
+      // Memory Cards Shader Time
       cardsGroup.children.forEach(card => {
-        if (card.material.uniforms) {
+        if (card.material && card.material.uniforms && card.material.uniforms.uTime) {
           card.material.uniforms.uTime.value = elapsedTime;
         }
       });
 
+      // Starfield Particle Drift & Organic Depth Sway
       const positions = dustGeometry.attributes.position.array;
       for (let i = 2; i < positions.length; i += 3) {
-        positions[i] += dustSpeeds[(i-2)/3];
+        positions[i] += dustSpeeds[(i - 2) / 3];
+        positions[i - 2] += Math.sin(elapsedTime * 0.4 + i) * 0.0025;
         if (positions[i] > firstZ + 15) {
           positions[i] = -320;
         }
       }
       dustGeometry.attributes.position.needsUpdate = true;
+
+      // Subtle atmospheric starfield breathing
+      dustMaterial.size = 0.14 + Math.sin(elapsedTime * 0.9) * 0.018;
 
       handleRaycast();
 
