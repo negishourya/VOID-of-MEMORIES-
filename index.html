@@ -7,7 +7,7 @@
   
   <!-- Monospace Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
   
   <style>
@@ -222,11 +222,28 @@
       color: #555566;
       font-size: 1.5rem;
       cursor: pointer;
-      transition: color 0.3s;
+      min-width: 44px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.3s, transform 0.2s ease;
     }
 
     .btn-close:hover {
       color: var(--color-neon-pink);
+      transform: scale(1.1);
+    }
+
+    .modal-hint {
+      font-size: 0.65rem;
+      color: #666680;
+      letter-spacing: 1px;
+      margin-top: -12px;
+      margin-bottom: 16px;
+      text-align: right;
     }
 
     textarea {
@@ -321,7 +338,8 @@
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(0, 243, 255, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 243, 255, 0.04));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                  linear-gradient(90deg, rgba(0, 243, 255, 0.04), rgba(0, 255, 0, 0.01), rgba(0, 243, 255, 0.04));
       background-size: 100% 4px, 6px 100%;
       pointer-events: none;
       opacity: 0.65;
@@ -336,7 +354,8 @@
     }
 
     .voyage-terminal.pink-holo::before {
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 127, 0.04), rgba(0, 255, 0, 0.01), rgba(255, 0, 127, 0.04));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 127, 0.04), rgba(0, 255, 0, 0.01), rgba(255, 0, 127, 0.04));
       background-size: 100% 4px, 6px 100%;
     }
 
@@ -914,6 +933,416 @@
       margin-top: 20px;
     }
 
+    /* Phase 2: Final Return-to-VOID Action */
+    .final-return-btn {
+      background: transparent;
+      border: 1px solid var(--color-neon-cyan);
+      color: var(--color-neon-cyan);
+      padding: 14px 32px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 3px;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      position: relative;
+      margin-top: 15px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.3s ease;
+    }
+
+    .final-return-btn:hover {
+      background: var(--color-neon-cyan);
+      color: #030305;
+      box-shadow: 0 0 25px rgba(0, 243, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* --- Phase 3: HIRE US Cinematic Intake System --- */
+    .hire-intake-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 25;
+      background: rgba(3, 3, 5, 0.88);
+      backdrop-filter: blur(16px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+      padding: 30px 20px;
+      overflow-y: auto;
+    }
+
+    .hire-intake-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .hire-terminal {
+      width: 100%;
+      max-width: 680px;
+      background: rgba(6, 10, 18, 0.82);
+      border: 1px solid rgba(0, 243, 255, 0.35);
+      border-radius: 16px;
+      padding: 36px;
+      position: relative;
+      box-shadow: 0 0 40px rgba(0, 243, 255, 0.12), inset 0 0 20px rgba(0, 243, 255, 0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      margin: auto;
+      transform: translateY(15px);
+      transition: transform 0.5s ease;
+    }
+
+    .hire-intake-overlay.active .hire-terminal {
+      transform: translateY(0);
+    }
+
+    .hire-terminal::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                  linear-gradient(90deg, rgba(0, 243, 255, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 243, 255, 0.02));
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+      opacity: 0.6;
+      border-radius: 16px;
+    }
+
+    .hire-terminal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+      padding-bottom: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hire-step-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      color: var(--color-neon-cyan);
+      text-transform: uppercase;
+    }
+
+    .hire-step-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-neon-cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--color-neon-cyan);
+    }
+
+    .hire-btn-cancel {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #888899;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 1.5px;
+      padding: 6px 14px;
+      cursor: pointer;
+      border-radius: 6px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .hire-btn-cancel:hover {
+      border-color: var(--color-neon-pink);
+      color: var(--color-neon-pink);
+    }
+
+    .hire-content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hire-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #ffffff;
+      line-height: 1.3;
+      text-transform: uppercase;
+    }
+
+    .hire-title span {
+      color: var(--color-neon-cyan);
+      text-shadow: 0 0 12px rgba(0, 243, 255, 0.4);
+    }
+
+    .hire-prompt {
+      font-size: 0.85rem;
+      color: #9999aa;
+      line-height: 1.6;
+      letter-spacing: 0.8px;
+    }
+
+    .hire-choice-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    @media (min-width: 600px) {
+      .hire-choice-grid.grid-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .hire-option-card {
+      background: rgba(0, 243, 255, 0.03);
+      border: 1px solid rgba(0, 243, 255, 0.2);
+      border-radius: 8px;
+      padding: 14px 18px;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .hire-option-card:hover {
+      border-color: var(--color-neon-cyan);
+      background: rgba(0, 243, 255, 0.08);
+      transform: translateX(3px);
+      box-shadow: 0 0 14px rgba(0, 243, 255, 0.15);
+    }
+
+    .hire-option-card.selected {
+      border-color: var(--color-neon-cyan);
+      background: rgba(0, 243, 255, 0.16);
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.25);
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .hire-option-card::after {
+      content: '>';
+      opacity: 0.4;
+      font-weight: bold;
+      color: var(--color-neon-cyan);
+      transition: opacity 0.2s;
+    }
+
+    .hire-option-card:hover::after,
+    .hire-option-card.selected::after {
+      opacity: 1;
+    }
+
+    .hire-input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hire-input, .hire-textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(0, 243, 255, 0.25);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .hire-input:focus, .hire-textarea:focus {
+      border-color: var(--color-neon-cyan);
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    }
+
+    .hire-textarea {
+      height: 140px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .hire-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      color: #666680;
+    }
+
+    .hire-inline-error {
+      color: var(--color-neon-pink);
+      font-size: 0.76rem;
+      letter-spacing: 0.8px;
+      min-height: 18px;
+    }
+
+    .hire-nav-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 18px;
+    }
+
+    .hire-nav-left {
+      display: flex;
+      gap: 10px;
+    }
+
+    .hire-nav-right {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .hire-btn {
+      background: transparent;
+      border: 1px solid var(--color-neon-cyan);
+      color: var(--color-neon-cyan);
+      padding: 12px 22px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 2px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 6px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .hire-btn:hover {
+      background: var(--color-neon-cyan);
+      color: #030305;
+      box-shadow: 0 0 18px rgba(0, 243, 255, 0.4);
+    }
+
+    .hire-btn.secondary {
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #aaaabb;
+    }
+
+    .hire-btn.secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border-color: #ffffff;
+      box-shadow: none;
+    }
+
+    /* Summary Presentation Screen */
+    .hire-summary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 243, 255, 0.15);
+      border-radius: 10px;
+      padding: 16px;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .hire-summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 10px;
+      gap: 12px;
+    }
+
+    .hire-summary-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .hire-summary-data {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .hire-summary-label {
+      font-size: 0.7rem;
+      color: #888899;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .hire-summary-val {
+      font-size: 0.85rem;
+      color: #ffffff;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .hire-summary-edit-btn {
+      background: transparent;
+      border: none;
+      color: var(--color-neon-cyan);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      padding: 4px 8px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      transition: opacity 0.2s;
+    }
+
+    .hire-summary-edit-btn:hover {
+      text-decoration: underline;
+      opacity: 0.8;
+    }
+
+    .hire-copy-feedback {
+      font-size: 0.76rem;
+      letter-spacing: 1px;
+      min-height: 18px;
+      text-align: center;
+      transition: color 0.3s;
+    }
+
+    .hire-copy-feedback.success {
+      color: var(--color-neon-cyan);
+      text-shadow: 0 0 8px rgba(0, 243, 255, 0.5);
+    }
+
+    .hire-copy-feedback.fallback {
+      color: #ffaa00;
+    }
+
     /* Perspective Hover Drift keyframes */
     @keyframes holo-float {
       0%, 100% {
@@ -943,6 +1372,11 @@
       .modal { margin: 20px; padding: 25px; }
       .final-title { font-size: 1.6rem; }
       .final-closing { font-size: 1.2rem; }
+      .final-return-btn { padding: 12px 24px; font-size: 0.75rem; }
+      .hire-terminal { padding: 24px 18px; }
+      .hire-title { font-size: 1.25rem; }
+      .hire-nav-actions { flex-wrap: wrap; }
+      .hire-nav-left, .hire-nav-right { width: 100%; justify-content: space-between; }
     }
   </style>
 </head>
@@ -978,9 +1412,10 @@
     <div class="modal">
       <div class="modal-header">
         <h3>WRITE TO THE VOID</h3>
-        <button class="btn-close" id="close-btn">&times;</button>
+        <button class="btn-close" id="close-btn" aria-label="Close modal">&times;</button>
       </div>
       <textarea id="memory-input" maxlength="140" placeholder="Type a memory... It will float eternally in deep space. (Max 140 characters)"></textarea>
+      <div class="modal-hint">PRESS [ CTRL + ENTER ] TO ENGRAVE // [ ESC ] TO DISMISS</div>
       <button class="btn-submit" id="submit-btn">ENGRAVE MEMORY</button>
     </div>
   </div>
@@ -1127,6 +1562,24 @@
         till then,
       </p>
       <h2 class="final-closing">MAY YOU KEEP SMILING LIKE THIS, ALWAYS...!</h2>
+      <button class="final-return-btn" id="final-return-btn">RETURN TO VOID</button>
+    </div>
+  </div>
+
+  <!-- Phase 3: HIRE US Cinematic Project Intake Overlay -->
+  <div class="hire-intake-overlay" id="hire-intake-overlay" role="dialog" aria-modal="true" aria-label="HIRE US Project Intake">
+    <div class="hire-terminal" id="hire-terminal">
+      <div class="hire-terminal-header">
+        <div class="hire-step-badge" id="hire-step-badge">
+          <div class="hire-step-dot"></div>
+          <span id="hire-step-tracker">INITIATE // HIRE_US</span>
+        </div>
+        <button class="hire-btn-cancel" id="hire-btn-cancel" aria-label="Exit intake and return to VOID">ESC // RETURN</button>
+      </div>
+
+      <div class="hire-content-area" id="hire-content-area">
+        <!-- Rendered dynamically via renderHireStep() -->
+      </div>
     </div>
   </div>
 
@@ -1161,7 +1614,7 @@
       // Warm Sub Synth
       mainOsc = audioCtx.createOscillator();
       mainOsc.type = 'sawtooth';
-      mainOsc.frequency.setValueAtTime(55, audioCtx.currentTime); // Low A
+      mainOsc.frequency.setValueAtTime(55, audioCtx.currentTime);
 
       // Cinematic Sweep Low-Pass Filter
       filterNode = audioCtx.createBiquadFilter();
@@ -1169,7 +1622,7 @@
       filterNode.frequency.setValueAtTime(140, audioCtx.currentTime);
       filterNode.Q.setValueAtTime(6, audioCtx.currentTime);
 
-      // Low Frequency Oscillator to slowly morph the sound
+      // Low Frequency Oscillator
       const lfo = audioCtx.createOscillator();
       lfo.type = 'sine';
       lfo.frequency.setValueAtTime(0.08, audioCtx.currentTime);
@@ -1253,19 +1706,17 @@
         vUv = uv;
         vec3 pos = position;
 
-        // Cinematic idle ambient sway
         float waveX = sin(pos.y * 1.5 + uTime * 0.8) * 0.04;
         float waveY = cos(pos.x * 1.5 + uTime * 0.8) * 0.04;
         pos.x += waveX;
         pos.y += waveY;
 
-        // Hover raycaster physical deformation
         if (uHover > 0.0) {
           float dist = distance(uv, uMouseLocal);
           vDistToMouse = dist;
           float force = smoothstep(0.4, 0.0, dist) * uHover;
           pos.z += force * 0.22;
-          pos.z += sin(dist * 25.0 - uTime * 6.0) * force * 0.03; // rippling effect
+          pos.z += sin(dist * 25.0 - uTime * 6.0) * force * 0.03;
         } else {
           vDistToMouse = 999.0;
         }
@@ -1285,30 +1736,24 @@
       void main() {
         vec2 uv = vUv;
 
-        // Chromatic distortion overlay under cursor
         if (uHover > 0.0) {
           float distortion = smoothstep(0.4, 0.0, vDistToMouse) * uHover * 0.015;
           uv.x += sin(uv.y * 40.0 + uTime * 8.0) * distortion;
           uv.y += cos(uv.x * 40.0 + uTime * 8.0) * distortion;
         }
 
-        // Texture Sampling
         vec4 texColor = texture2D(uTexture, uv);
-
-        // Holographic Cyberpunk Scanlines
         float scanline = sin(uv.y * 150.0 + uTime * 5.0) * 0.04;
         
-        // Base color calculations
         vec3 finalGlow = uColor;
         if (uHover > 0.0) {
-          vec3 targetPink = vec3(1.0, 0.0, 0.5); // Pink shifts when hovered
+          vec3 targetPink = vec3(1.0, 0.0, 0.5);
           finalGlow = mix(uColor, targetPink, uHover * smoothstep(0.4, 0.0, vDistToMouse));
         }
 
         vec4 finalColor = texColor;
         finalColor.rgb += scanline * texColor.a;
 
-        // Vignette card bounding soft-edge fade
         float borderFade = smoothstep(0.0, 0.03, vUv.x) * smoothstep(1.0, 0.97, vUv.x) *
                            smoothstep(0.0, 0.08, vUv.y) * smoothstep(1.0, 0.92, vUv.y);
         
@@ -1419,45 +1864,36 @@
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
 
-      // Transparent charcoal backdrop
       ctx.fillStyle = 'rgba(5, 5, 8, 0.9)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Cyberpunk grid backing
       ctx.fillStyle = 'rgba(0, 243, 255, 0.02)';
       for (let y = 0; y < canvas.height; y += 8) {
         ctx.fillRect(0, y, canvas.width, 1);
       }
 
-      // Neon cyan border
       ctx.strokeStyle = 'rgba(0, 243, 255, 0.2)';
       ctx.lineWidth = 4;
       ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-      // Technical HUD corner lines
       ctx.strokeStyle = 'rgba(0, 243, 255, 0.7)';
       ctx.lineWidth = 2;
-      // Top-Left corner tag
       ctx.beginPath();
       ctx.moveTo(10, 50); ctx.lineTo(10, 10); ctx.lineTo(50, 10);
       ctx.stroke();
-      // Bottom-Right corner tag
       ctx.beginPath();
       ctx.moveTo(canvas.width - 10, canvas.height - 50); 
       ctx.lineTo(canvas.width - 10, canvas.height - 10); 
       ctx.lineTo(canvas.width - 50, canvas.height - 10);
       ctx.stroke();
 
-      // Top metadata tag
       ctx.fillStyle = 'rgba(0, 243, 255, 0.6)';
       ctx.font = '16px "JetBrains Mono", monospace';
       ctx.fillText(`[ MEM_RELIC // ID: ${Math.floor(1000 + Math.random() * 9000)} ]`, 40, 45);
 
-      // Bottom timestamp
       ctx.fillStyle = 'rgba(255, 0, 127, 0.6)';
       ctx.fillText('[ STATUS: FLOATING_IN_VOID ]', canvas.width - 320, canvas.height - 40);
 
-      // Glow configurations
       ctx.shadowColor = '#00f3ff';
       ctx.shadowBlur = 10;
       ctx.fillStyle = '#ffffff';
@@ -1479,40 +1915,31 @@
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
 
-      // Slightly pinkish dark backdrop
       ctx.fillStyle = 'rgba(10, 5, 12, 0.95)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Neon grid lines
       ctx.fillStyle = 'rgba(255, 0, 127, 0.03)';
       for (let y = 0; y < canvas.height; y += 8) {
         ctx.fillRect(0, y, canvas.width, 1);
       }
 
-      // Neon pink border
       ctx.strokeStyle = 'rgba(255, 0, 127, 0.4)';
       ctx.lineWidth = 6;
       ctx.strokeRect(15, 15, canvas.width - 30, canvas.height - 30);
 
-      // Technical corners
       ctx.strokeStyle = '#ff007f';
       ctx.lineWidth = 3;
-      // Top-Left
       ctx.beginPath(); ctx.moveTo(10, 60); ctx.lineTo(10, 10); ctx.lineTo(60, 10); ctx.stroke();
-      // Bottom-Right
       ctx.beginPath(); ctx.moveTo(canvas.width - 10, canvas.height - 60); ctx.lineTo(canvas.width - 10, canvas.height - 10); ctx.lineTo(canvas.width - 60, canvas.height - 10); ctx.stroke();
 
-      // Technical Header
       ctx.fillStyle = '#ff007f';
       ctx.font = 'bold 20px "JetBrains Mono", monospace';
       ctx.fillText('[ PROTOCOL // VOID_ENGRAVING_v5.0 ]', 40, 50);
 
-      // Sub footer
       ctx.fillStyle = '#00f3ff';
       ctx.font = '16px "JetBrains Mono", monospace';
       ctx.fillText('[ STATUS: READY_TO_RECEIVE_INPUT ]', 40, canvas.height - 40);
 
-      // Core centered text instructions
       ctx.shadowColor = '#ff007f';
       ctx.shadowBlur = 15;
       ctx.fillStyle = '#ffffff';
@@ -1529,10 +1956,9 @@
     }
 
     // --- 6. ADD MEMORY TO SPACE ---
-    let firstZ = 5; // Track the absolute front-most coordinate
+    let firstZ = 5;
     let cardSideToggleFront = true;
 
-    // Standard static placement for initial seed cards
     function buildPresetMemoryCard(text, z) {
       const texture = generateTexture(text);
       const geometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
@@ -1560,7 +1986,6 @@
       return mesh;
     }
 
-    // Dynamically place new cards at the front of the corridor
     function buildFrontMemoryCard(text) {
       const texture = generateTexture(text);
       const geometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
@@ -1581,9 +2006,8 @@
 
       const mesh = new THREE.Mesh(geometry, material);
 
-      // Stagger new additions at the front
       const targetZ = firstZ + 13;
-      firstZ = targetZ; // Update boundary
+      firstZ = targetZ;
 
       const x = cardSideToggleFront ? -3.5 : 3.5;
       cardSideToggleFront = !cardSideToggleFront;
@@ -1595,55 +2019,52 @@
       return { mesh, targetX: x, targetY: y, targetZ: targetZ };
     }
 
-    // Spawn preset Constellation
     presetMemories.forEach((mem, index) => {
       buildPresetMemoryCard(mem, 5 - (index * 13));
     });
 
     const relicCounter = document.getElementById('relic-count');
     
-    // Clean counting mechanism filtering portal and system UI cards
     function updateRelicCounter() {
       const count = cardsGroup.children.filter(child => !child.userData.isPortal && !child.userData.isEngraveCard).length;
       relicCounter.textContent = count.toString().padStart(2, '0');
     }
 
-    // --- 6B. ENGRAVING TERMINAL CARD SETUP (PERFECT MIDDLE) ---
-    const engraveCardZ = -105; // Positioned dynamically past the last memory relic
+    // --- 6B. ENGRAVING TERMINAL CARD SETUP ---
+    const engraveCardZ = -105;
     const engraveTexture = generateEngraveTexture();
     const engraveGeometry = new THREE.PlaneGeometry(5, 2.5, 32, 16);
 
     const engraveMaterial = new THREE.ShaderMaterial({
       vertexShader,
-      fragmentShader: portalFragmentShader, // Utilizes portal fragment shader to handle custom hover shifts
+      fragmentShader: portalFragmentShader,
       uniforms: {
         uTexture: { value: engraveTexture },
         uTime: { value: 0 },
         uHover: { value: 0 },
         uMouseLocal: { value: new THREE.Vector2(0.5, 0.5) },
-        uColor: { value: new THREE.Color('#ff007f') }, // Ambient neon pink
-        uHoverColor: { value: new THREE.Color('#00f3ff') } // Hover shifts to cyan
+        uColor: { value: new THREE.Color('#ff007f') },
+        uHoverColor: { value: new THREE.Color('#00f3ff') }
       },
       transparent: true,
       depthWrite: false
     });
 
     const engraveMesh = new THREE.Mesh(engraveGeometry, engraveMaterial);
-    engraveMesh.position.set(0, 0, engraveCardZ); // Perfect middle centering (X: 0, Y: 0)
+    engraveMesh.position.set(0, 0, engraveCardZ);
     engraveMesh.userData = {
       isEngraveCard: true
     };
     cardsGroup.add(engraveMesh);
 
     // --- 6C. THE RED AND BLUE UNIVERSES PAST THE END ---
-    const portalsZ = -145; // Deeper coordinate region past the last card
+    const portalsZ = -145;
 
     // Left Blue Universe Group
     const leftUniverse = new THREE.Group();
     leftUniverse.position.set(-6.5, 0.8, portalsZ);
     scene.add(leftUniverse);
 
-    // Blue Core Geometry
     const blueCoreGeo = new THREE.IcosahedronGeometry(1.6, 2);
     const blueCoreMat = new THREE.MeshBasicMaterial({
       color: 0x00f3ff,
@@ -1654,7 +2075,6 @@
     const blueCore = new THREE.Mesh(blueCoreGeo, blueCoreMat);
     leftUniverse.add(blueCore);
 
-    // Blue Saturn Ring
     const blueRingGeo = new THREE.TorusGeometry(2.6, 0.05, 8, 64);
     const blueRingMat = new THREE.MeshBasicMaterial({
       color: 0x0088ff,
@@ -1666,7 +2086,6 @@
     blueRing.rotation.y = 0.3;
     leftUniverse.add(blueRing);
 
-    // Left Universe Local Particles
     const leftPartGeo = new THREE.BufferGeometry();
     const leftPartCount = 180;
     const leftPartPos = new Float32Array(leftPartCount * 3);
@@ -1689,13 +2108,11 @@
     const leftParticles = new THREE.Points(leftPartGeo, leftPartMat);
     leftUniverse.add(leftParticles);
 
-
     // Right Red Universe Group
     const rightUniverse = new THREE.Group();
     rightUniverse.position.set(6.5, 0.8, portalsZ);
     scene.add(rightUniverse);
 
-    // Red Core Geometry
     const redCoreGeo = new THREE.OctahedronGeometry(1.7, 1);
     const redCoreMat = new THREE.MeshBasicMaterial({
       color: 0xff007f,
@@ -1706,7 +2123,6 @@
     const redCore = new THREE.Mesh(redCoreGeo, redCoreMat);
     rightUniverse.add(redCore);
 
-    // Outer nested wireframe box
     const redCageGeo = new THREE.BoxGeometry(2.7, 2.7, 2.7);
     const redCageMat = new THREE.MeshBasicMaterial({
       color: 0xff0044,
@@ -1717,7 +2133,6 @@
     const redCage = new THREE.Mesh(redCageGeo, redCageMat);
     rightUniverse.add(redCage);
 
-    // Right Universe Local Particles
     const rightPartGeo = new THREE.BufferGeometry();
     const rightPartCount = 180;
     const rightPartPos = new Float32Array(rightPartCount * 3);
@@ -1740,7 +2155,6 @@
     const rightParticles = new THREE.Points(rightPartGeo, rightPartMat);
     rightUniverse.add(rightParticles);
 
-
     // --- 6D. GENERATE PORTAL / INTERACTIVE CHOICE CARDS ---
     function buildPortalChoiceCard(text, subtitle, mainColor, hoverColor, x, y, z, type, targetUrl) {
       const canvas = document.createElement('canvas');
@@ -1748,27 +2162,22 @@
       canvas.height = 512;
       const ctx = canvas.getContext('2d');
 
-      // Dark background panel
       ctx.fillStyle = 'rgba(5, 5, 8, 0.95)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Matrix background lines
       ctx.fillStyle = 'rgba(255, 255, 255, 0.015)';
       for (let y = 0; y < canvas.height; y += 8) {
         ctx.fillRect(0, y, canvas.width, 1);
       }
 
-      // Strong styled border frame
       ctx.strokeStyle = mainColor;
       ctx.lineWidth = 10;
       ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
 
-      // Card Metadata Header
       ctx.fillStyle = mainColor;
       ctx.font = '24px "JetBrains Mono", monospace';
       ctx.fillText('[ INITIATE_ACCESS_PROTOCOL ]', 60, 80);
 
-      // Core Text Header
       ctx.shadowColor = mainColor;
       ctx.shadowBlur = 15;
       ctx.fillStyle = '#ffffff';
@@ -1776,7 +2185,6 @@
       ctx.textAlign = 'center';
       ctx.fillText(text, canvas.width / 2, canvas.height / 2 + 10);
 
-      // Subtitle navigation guide
       ctx.shadowBlur = 0;
       ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
       ctx.font = '24px "JetBrains Mono", monospace';
@@ -1805,7 +2213,6 @@
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(x, y, z);
       
-      // Hook attributes for click mapping
       mesh.userData = {
         isPortal: true,
         type: type,
@@ -1816,7 +2223,7 @@
       return mesh;
     }
 
-    // Build HIRE US and JOIN US interactive selection portals
+    // Phase 3: HIRE US portal routes to dedicated cinematic intake
     const leftCard = buildPortalChoiceCard(
       "HIRE US", 
       "--> ENTER REDUCED VOID", 
@@ -1824,7 +2231,7 @@
       "#0055ff", 
       -6.5, -2.2, portalsZ, 
       "hire", 
-      "https://github.com/hire" // Replace with actual URL
+      ""
     );
 
     const rightCard = buildPortalChoiceCard(
@@ -1834,10 +2241,9 @@
       "#ff0000", 
       6.5, -2.2, portalsZ, 
       "join", 
-      "" // Handled programmatically via runVoyageSequence()
+      ""
     );
 
-    // Initial count rendering
     updateRelicCounter();
 
     // --- 7. AMBIENT DUST / STARFIELD ---
@@ -1847,15 +2253,14 @@
     const dustSpeeds = new Float32Array(dustCount);
 
     for (let i = 0; i < dustCount * 3; i += 3) {
-      dustPos[i] = (Math.random() - 0.5) * 50;     // X
-      dustPos[i+1] = (Math.random() - 0.5) * 30;   // Y
-      dustPos[i+2] = -Math.random() * 320;         // Z (extended deep to wrap voyage scene in floating particles)
+      dustPos[i] = (Math.random() - 0.5) * 50;
+      dustPos[i+1] = (Math.random() - 0.5) * 30;
+      dustPos[i+2] = -Math.random() * 320;
       dustSpeeds[i/3] = 0.02 + Math.random() * 0.05;
     }
 
     dustGeometry.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
 
-    // Generate circular glow canvas for clean dust particles
     function generateDustTexture() {
       const canvas = document.createElement('canvas');
       canvas.width = 32;
@@ -1883,26 +2288,26 @@
 
     // --- 8. SMOOTH NAVIGATIONAL INERTIA ---
     let targetCameraZ = 12;
-    let maxScrollZ = 12; // Adjusted dynamically when cards are appended at the front
-    let minScrollZ = -165; // Extended past the end to display portals
+    let maxScrollZ = 12;
+    let minScrollZ = -165;
+    let isHireActive = false;
 
     window.addEventListener('wheel', (e) => {
-      if (isVoyageActive) return; // Prevent zooming during sequence
+      if (isVoyageActive || isHireActive) return;
       targetCameraZ -= e.deltaY * 0.04;
       targetCameraZ = Math.min(maxScrollZ, Math.max(minScrollZ, targetCameraZ));
     });
 
-    // Touch support for mobile devices
     let touchYStart = 0;
     let isTouching = false;
     window.addEventListener('touchstart', (e) => {
-      if (isVoyageActive) return;
+      if (isVoyageActive || isHireActive) return;
       touchYStart = e.touches[0].clientY;
       isTouching = true;
     });
 
     window.addEventListener('touchmove', (e) => {
-      if (isVoyageActive) return;
+      if (isVoyageActive || isHireActive) return;
       if (!isTouching) return;
       const deltaY = e.touches[0].clientY - touchYStart;
       touchYStart = e.touches[0].clientY;
@@ -1912,7 +2317,6 @@
 
     window.addEventListener('touchend', () => { isTouching = false; });
 
-    // Parallel camera float (parallax on mousemove)
     let mouse = new THREE.Vector2();
     let targetCameraX = 0;
     let targetCameraY = 0;
@@ -1925,7 +2329,7 @@
       targetCameraY = mouse.y * 1.0;
     });
 
-    // --- 9. INTERACTIVE RAYCASTING (HOVER RIPPLES) ---
+    // --- 9. INTERACTIVE RAYCASTING ---
     const raycaster = new THREE.Raycaster();
     let activeCard = null;
 
@@ -1945,7 +2349,6 @@
         gsap.to(card.material.uniforms.uHover, { value: 1.0, duration: 0.3 });
         card.material.uniforms.uMouseLocal.value.copy(hit.uv);
 
-        // Hover scale feedback on relative universes
         if (card.userData.isPortal) {
           if (card.userData.type === 'hire') {
             gsap.to(leftUniverse.scale, { x: 1.2, y: 1.2, z: 1.2, duration: 0.4 });
@@ -1958,35 +2361,34 @@
           gsap.to(activeCard.material.uniforms.uHover, { value: 0.0, duration: 0.5 });
           activeCard = null;
         }
-        // Rescale universes to normal size
         gsap.to(leftUniverse.scale, { x: 1.0, y: 1.0, z: 1.0, duration: 0.4 });
         gsap.to(rightUniverse.scale, { x: 1.0, y: 1.0, z: 1.0, duration: 0.4 });
       }
     }
 
-    // Interactive Trigger Mechanics
-    window.addEventListener('click', () => {
-      if (isVoyageActive) return; // Ignore standard click processing while in narrative mode
+    // Phase 1 + Phase 2 + Phase 3 Portal Click Dispatcher
+    window.addEventListener('click', (e) => {
+      if (isVoyageActive || isHireActive) return;
+      if (e.target !== canvas) return;
+
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(cardsGroup.children);
       if (intersects.length > 0) {
         const hit = intersects[0].object;
         if (hit.userData && hit.userData.isPortal) {
           if (hit.userData.type === 'join') {
-            // Initiate deep void voyage sequence
             runVoyageSequence();
-          } else {
-            window.open(hit.userData.url, '_blank');
+          } else if (hit.userData.type === 'hire') {
+            startHireIntakeSequence();
           }
         } else if (hit.userData && hit.userData.isEngraveCard) {
-          // Centered engrave card triggers input prompt modal
           modalOverlay.classList.add('open');
           memoryInput.focus();
         }
       }
     });
 
-    // --- 10. SPARK BURST SYSTEM (ON ENGRAVING SUBMISSIONS) ---
+    // --- 10. SPARK BURST SYSTEM ---
     function triggerNeonBurst(pos) {
       const count = 60;
       const geo = new THREE.BufferGeometry();
@@ -2017,7 +2419,7 @@
         transparent: true,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
-        color: 0xff007f // Pink sparkles on entry
+        color: 0xff007f
       });
 
       const points = new THREE.Points(geo, burstMat);
@@ -2047,7 +2449,7 @@
       });
     }
 
-    // --- 11. SUBMISSION MODAL PIPELINE (ENGRAVING TO FRONT) ---
+    // --- 11. SUBMISSION MODAL PIPELINE ---
     const modalOverlay = document.getElementById('modal-overlay');
     const connectBtn = document.getElementById('connect-btn');
     const closeBtn = document.getElementById('close-btn');
@@ -2055,7 +2457,6 @@
     const memoryInput = document.getElementById('memory-input');
     const scrollPrompt = document.getElementById('scroll-prompt-el');
 
-    // Handle scroll depth prompt changes dynamically
     let promptTriggered = false;
     let choicesPromptActive = false;
 
@@ -2104,7 +2505,6 @@
       }
     }
 
-    // Redundant helper on HUD click to guarantee flawless mobile/web accessibility
     scrollPrompt.addEventListener('click', () => {
       if (promptTriggered) {
         modalOverlay.classList.add('open');
@@ -2112,11 +2512,10 @@
       }
     });
 
-    // Animate camera deep past the end to portal choices on button click
     connectBtn.addEventListener('click', () => {
       const camTargetObj = { z: camera.position.z };
       gsap.to(camTargetObj, {
-        z: portalsZ + 12, // perfect viewing distance of 12 units away
+        z: portalsZ + 12,
         duration: 3.5,
         ease: 'power3.inOut',
         onUpdate: () => {
@@ -2131,6 +2530,23 @@
       modalOverlay.classList.remove('open');
     });
 
+    memoryInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        submitBtn.click();
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (modalOverlay.classList.contains('open')) {
+          modalOverlay.classList.remove('open');
+        } else if (isHireActive) {
+          exitHireIntake();
+        }
+      }
+    });
+
     submitBtn.addEventListener('click', () => {
       const text = memoryInput.value.trim();
       if (text.length === 0) return;
@@ -2138,25 +2554,17 @@
       modalOverlay.classList.remove('open');
       memoryInput.value = '';
 
-      // 1. Build the card dynamically at the new absolute front coordinate
       const { mesh, targetX, targetY, targetZ } = buildFrontMemoryCard(text);
-
-      // 2. Adjust maximum scroll limit so camera can navigate forward to the new card
       maxScrollZ = firstZ + 7;
-
-      // 3. Update HUD counter dynamically
       updateRelicCounter();
 
-      // 4. Position the card temporarily in front of the active camera view
       const spawnZ = camera.position.z - 4;
       mesh.position.set(camera.position.x, camera.position.y, spawnZ);
       mesh.scale.set(0.01, 0.01, 0.01);
 
-      // 5. Trigger particle burst
       const spawnPoint = new THREE.Vector3(camera.position.x, camera.position.y, spawnZ);
       triggerNeonBurst(spawnPoint);
 
-      // 6. GSAP timeline: Pop the card up, and fly it backward to its front resting spot
       const tl = gsap.timeline();
       tl.to(mesh.scale, {
         x: 1, y: 1, z: 1,
@@ -2171,7 +2579,6 @@
         ease: 'power4.inOut'
       }, '-=0.4');
 
-      // 7. Pull camera smoothly back to the front entrance to watch the card settle
       gsap.to(window, {
         duration: 3.2,
         onUpdate: () => {
@@ -2183,7 +2590,7 @@
     // --- 11B. DEEP SPACE VOYAGE SEQUENCE SCENARIO ROUTE ---
     let isVoyageActive = false;
     let voyagerDesignation = "Voyager";
-    let voyageStage = "proposal"; // proposal, captains_letter, perks_and_requirements, final_redirection
+    let voyageStage = "proposal";
 
     function delay(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
@@ -2221,12 +2628,10 @@
     async function runVoyageSequence() {
       isVoyageActive = true;
       voyageStage = "proposal"; 
-      initAudio(); // Warm up synth contexts just in case
+      initAudio();
 
-      // Fade out current 2D HUD interface
       gsap.to('.hud', { opacity: 0, pointerEvents: 'none', duration: 1.2 });
 
-      // Animate Camera past portals into deep quiet void region (Z: -250)
       gsap.to(camera.position, {
         x: 0,
         y: 0,
@@ -2240,15 +2645,12 @@
         }
       });
 
-      // Sink 3D corridor elements downward to empty the perspective completely
       gsap.to(cardsGroup.position, { y: -30, duration: 2.2, ease: 'power2.inOut' });
       gsap.to(leftUniverse.position, { y: -30, duration: 2.2, ease: 'power2.inOut' });
       gsap.to(rightUniverse.position, { y: -30, duration: 2.2, ease: 'power2.inOut' });
 
-      // Wait for coordinate transition to resolve
       await delay(2800);
 
-      // Render narrative command center
       const overlay = document.getElementById('voyage-overlay');
       const textEl = document.getElementById('voyage-text-content');
       const inputGroup = document.getElementById('voyage-input-container');
@@ -2256,7 +2658,6 @@
       const nameInput = document.getElementById('voyage-name');
       const terminalBox = document.getElementById('voyage-terminal-box');
 
-      // Reset components state & colors
       terminalBox.classList.remove('pink-holo');
       terminalBox.style.display = 'flex';
       terminalBox.style.opacity = '1';
@@ -2267,35 +2668,28 @@
       textEl.innerHTML = "";
       nameInput.value = "";
 
-      // Step 1: Greeting
       await typeText(textEl, "Hello Lonely Voyager!");
       await delay(1500);
 
-      // Step 2: Designation Prompt
       await typeText(textEl, "Identify yourself. Enter your designation:");
       inputGroup.classList.add('visible');
       nameInput.focus();
 
-      // Configure event listeners for the input submission
       const nameSubmitBtn = document.getElementById('voyage-name-submit');
       
       const onDesignationSubmit = async () => {
         const value = nameInput.value.trim();
         voyagerDesignation = value || "Voyager";
         
-        // Cleanup listeners
         nameSubmitBtn.removeEventListener('click', onDesignationSubmit);
         nameInput.removeEventListener('keydown', onKeySubmit);
         
-        // Hide designation HUD elements
         inputGroup.classList.remove('visible');
         await delay(600);
 
-        // Step 3: Main Scenario Voyage Proposal
         const proposalMsg = `${voyagerDesignation},\n\nThe VOID is looking for a team to go for a VOYAGE into the FUTURE.\n\nARE YOU INTERESTED?`;
         await typeText(textEl, proposalMsg);
         
-        // Display Interactive Options
         choicesGroup.classList.add('visible');
       };
 
@@ -2308,8 +2702,6 @@
     }
 
     // --- 11C. VOYAGE SCENARIO STATE MANAGEMENT PIPELINE ---
-
-    // Transition Handler for Captain's Hologram Letter
     async function renderCaptainsLetter() {
       const textEl = document.getElementById('voyage-text-content');
       const choicesGroup = document.getElementById('voyage-choices-container');
@@ -2318,7 +2710,7 @@
       await delay(600);
 
       terminalBox.classList.add('pink-holo');
-      textEl.innerHTML = ""; // Clean frame
+      textEl.innerHTML = "";
 
       await typeText(textEl, "Captain has sent a letter to you-\n\n", 40, true);
       
@@ -2330,21 +2722,18 @@
       choicesGroup.classList.add('visible');
     }
 
-    // Transition Handler for Perks & Requirements Display
     async function renderPerksAndRequirements() {
       const textEl = document.getElementById('voyage-text-content');
       const choicesGroup = document.getElementById('voyage-choices-container');
       choicesGroup.classList.remove('visible');
       await delay(600);
 
-      textEl.innerHTML = ""; // Clean frame
+      textEl.innerHTML = "";
 
-      // Structural layout wrapper for styled alignment
       const infoBox = document.createElement('div');
       infoBox.className = 'voyage-info-box';
       textEl.appendChild(infoBox);
 
-      // Section 1: Perks
       const perkSec = document.createElement('div');
       perkSec.className = 'voyage-info-section';
       infoBox.appendChild(perkSec);
@@ -2373,7 +2762,6 @@
 
       await delay(500);
 
-      // Section 2: Requirements
       const reqSec = document.createElement('div');
       reqSec.className = 'voyage-info-section';
       infoBox.appendChild(reqSec);
@@ -2402,7 +2790,6 @@
 
       await delay(800);
 
-      // Question Prompt
       const questionPrompt = document.createElement('div');
       questionPrompt.style.marginTop = '15px';
       questionPrompt.style.fontWeight = 'bold';
@@ -2413,7 +2800,6 @@
       choicesGroup.classList.add('visible');
     }
 
-    // Transition Handler for Final Redirection Target
     async function renderFinalRedirection() {
       const textEl = document.getElementById('voyage-text-content');
       const choicesGroup = document.getElementById('voyage-choices-container');
@@ -2421,12 +2807,11 @@
       choicesGroup.classList.remove('visible');
       await delay(600);
 
-      textEl.innerHTML = ""; // Clean frame
+      textEl.innerHTML = "";
 
       await typeText(textEl, "Alright Dreamer, ASTRIK will help you reach me", 40);
       await delay(1200);
 
-      // Tap to Continue Pulsing Trigger Button
       const tapBtn = document.createElement('button');
       tapBtn.className = 'voyage-btn tap-continue-btn';
       tapBtn.textContent = 'TAP TO CONTINUE';
@@ -2440,7 +2825,6 @@
       const onContinueTap = () => {
         tapBtn.removeEventListener('click', onContinueTap);
         
-        // 1. Zoom Camera deep into the center void
         const zoomDuration = 1.5;
         gsap.to(camera.position, {
           z: -285,
@@ -2451,17 +2835,15 @@
           }
         });
 
-        // 2. Smoothly fade out the terminal narrative screen
         gsap.to('#voyage-overlay', {
           opacity: 0,
           duration: 0.8,
           onComplete: () => {
             document.getElementById('voyage-overlay').classList.remove('active');
-            document.getElementById('voyage-overlay').style.opacity = ''; // reset styling
+            document.getElementById('voyage-overlay').style.opacity = '';
           }
         });
 
-        // 3. Fade and reveal the responsive glassmorphic Contacts Page
         setTimeout(() => {
           document.getElementById('contact-screen-overlay').classList.add('open');
         }, zoomDuration * 1000 - 300);
@@ -2472,7 +2854,6 @@
       tapBtn.addEventListener('click', onContinueTap);
     }
 
-    // Standard Universal 'NO' Funnel Handler (renders within compact hologram terminal)
     async function handleNoChoice() {
       const textEl = document.getElementById('voyage-text-content');
       const choicesGroup = document.getElementById('voyage-choices-container');
@@ -2485,7 +2866,6 @@
       await typeText(textEl, "You're a man with a free will, you're free to go wherever you like;");
       await delay(3200);
 
-      // Clean frames and transition to thank you inside the 3D hologram itself
       textEl.innerHTML = "";
       
       const thankYouDiv = document.createElement('div');
@@ -2495,13 +2875,12 @@
       thankYouDiv.style.textShadow = '0 0 12px rgba(255, 0, 127, 0.7)';
       thankYouDiv.style.textAlign = 'center';
       thankYouDiv.style.fontWeight = 'bold';
-      thankYouDiv.style.margin = '15px 0';
+      thankYouDiv.margin = '15px 0';
       textEl.appendChild(thankYouDiv);
 
       await typeText(thankYouDiv, "THANK YOU FOR JOINING THE VOYAGE", 50);
       await delay(1500);
 
-      // Restore system button inside the hologram
       const restoreBtn = document.createElement('button');
       restoreBtn.className = 'voyage-btn pink';
       restoreBtn.textContent = 'RESTORE SYSTEM CORE';
@@ -2519,7 +2898,6 @@
       restoreBtn.addEventListener('click', onRestore);
     }
 
-    // Wire Interactive YES Event Handler dynamically based on system state
     document.getElementById('voyage-yes').addEventListener('click', () => {
       if (voyageStage === "proposal") {
         voyageStage = "captains_letter";
@@ -2533,39 +2911,29 @@
       }
     });
 
-    // Wire Interactive NO Event Handler (Directly triggers funnel from any stage)
     document.getElementById('voyage-no').addEventListener('click', () => {
       handleNoChoice();
     });
 
-    // Restore original WebGL environment and overlay styles
     function exitVoyageScreen() {
       isVoyageActive = false;
       document.getElementById('voyage-overlay').classList.remove('active');
-
-      // Clear layout elements inside terminal
       document.getElementById('voyage-text-content').innerHTML = "";
 
-      // Bring normal 3D elements back to life
       gsap.to(cardsGroup.position, { y: 0, duration: 2.0, ease: 'power2.out' });
       gsap.to(leftUniverse.position, { y: 0.8, duration: 2.0, ease: 'power2.out' });
       gsap.to(rightUniverse.position, { y: 0.8, duration: 2.0, ease: 'power2.out' });
 
-      // Reposition camera nicely back at selection portal coordinate thresholds
       targetCameraZ = portalsZ + 12;
       targetCameraX = 0;
       targetCameraY = 0;
 
-      // Bring standard HUD components back online
       gsap.to('.hud', { opacity: 1, pointerEvents: 'auto', duration: 1.0 });
     }
 
-    // Trigger form dissolution into the void
     function playDissolveTransition(userName) {
-      // Set name details dynamically
       document.getElementById('final-username').textContent = userName || voyagerDesignation || "Voyager";
 
-      // 1. Dissolve the Contact Screen Overlay
       gsap.to('#contact-screen-overlay', {
         opacity: 0,
         scale: 0.85,
@@ -2576,7 +2944,6 @@
         }
       });
 
-      // 2. Move Three.js camera infinitely deep into the silent void
       gsap.to(camera.position, {
         z: -340,
         duration: 5.5,
@@ -2586,18 +2953,20 @@
         }
       });
 
-      // 3. Disperse/Dim background particles to heighten the transition
       gsap.to(dustMaterial, {
         size: 0.04,
         opacity: 0.15,
         duration: 4.5
       });
 
-      // 4. Activate the cinematic final message overlay
       const finalOverlay = document.getElementById('final-screen-overlay');
       finalOverlay.classList.add('active');
 
-      // 5. Staggered fade-in reveals for clean styling layout
+      gsap.set(['.final-title', '.final-subtitle', '.final-closing', '#final-return-btn'], {
+        opacity: 0,
+        y: 30
+      });
+
       const tl = gsap.timeline({ delay: 1.2 });
 
       tl.to('.final-title', {
@@ -2620,6 +2989,821 @@
         duration: 2.4,
         ease: 'power3.out'
       }, '-=0.3');
+
+      tl.to('#final-return-btn', {
+        opacity: 1,
+        y: 0,
+        duration: 1.4,
+        ease: 'power3.out'
+      }, '-=0.4');
+    }
+
+    function returnToVoidFromFinal() {
+      const finalOverlay = document.getElementById('final-screen-overlay');
+
+      gsap.killTweensOf(camera.position);
+      gsap.killTweensOf(dustMaterial);
+
+      gsap.to(finalOverlay, {
+        opacity: 0,
+        duration: 1.0,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          finalOverlay.classList.remove('active');
+          finalOverlay.style.opacity = '';
+          gsap.set(['.final-title', '.final-subtitle', '.final-closing', '#final-return-btn'], {
+            opacity: 0,
+            y: 30
+          });
+        }
+      });
+
+      const contactOverlay = document.getElementById('contact-screen-overlay');
+      contactOverlay.classList.remove('open');
+      contactOverlay.style.opacity = '';
+      contactOverlay.style.transform = '';
+      document.getElementById('cyber-contact-form').reset();
+
+      gsap.to(dustMaterial, {
+        size: 0.15,
+        opacity: 1.0,
+        duration: 2.0,
+        ease: 'power2.out'
+      });
+
+      gsap.to(cardsGroup.position, { y: 0, duration: 2.0, ease: 'power2.out' });
+      gsap.to(leftUniverse.position, { y: 0.8, duration: 2.0, ease: 'power2.out' });
+      gsap.to(rightUniverse.position, { y: 0.8, duration: 2.0, ease: 'power2.out' });
+
+      const targetZ = portalsZ + 12;
+      gsap.to(camera.position, {
+        x: 0,
+        y: 0,
+        z: targetZ,
+        duration: 2.5,
+        ease: 'power3.out',
+        onUpdate: () => {
+          targetCameraX = 0;
+          targetCameraY = 0;
+          targetCameraZ = camera.position.z;
+        },
+        onComplete: () => {
+          targetCameraZ = targetZ;
+          targetCameraX = 0;
+          targetCameraY = 0;
+        }
+      });
+
+      gsap.to('.hud', { opacity: 1, pointerEvents: 'auto', duration: 1.2 });
+
+      isVoyageActive = false;
+      voyageStage = "proposal";
+    }
+
+    document.getElementById('final-return-btn').addEventListener('click', returnToVoidFromFinal);
+
+    // --- 11D. PHASE 3: HIRE US CINEMATIC PROJECT INTAKE ENGINE ---
+    const HIRE_RECIPIENT_EMAIL = "siddhantsolves@gmail.com";
+
+    const hireState = {
+      isOpen: false,
+      step: 0, // 0 = intro, 1..7 = steps, 8 = review summary
+      projectType: '',
+      description: '',
+      followUp: '',
+      timeline: '',
+      budget: '',
+      name: '',
+      email: '',
+      copied: false
+    };
+
+    function startHireIntakeSequence() {
+      isHireActive = true;
+      hireState.isOpen = true;
+      initAudio();
+
+      gsap.to('.hud', { opacity: 0, pointerEvents: 'none', duration: 0.8 });
+
+      gsap.to(camera.position, {
+        x: -3.5,
+        y: 0,
+        z: -155,
+        duration: 2.2,
+        ease: 'power3.inOut',
+        onUpdate: () => {
+          targetCameraX = -3.5;
+          targetCameraY = 0;
+          targetCameraZ = camera.position.z;
+        }
+      });
+
+      gsap.to(cardsGroup.position, { y: -30, duration: 1.8, ease: 'power2.inOut' });
+      gsap.to(leftUniverse.position, { y: -30, duration: 1.8, ease: 'power2.inOut' });
+      gsap.to(rightUniverse.position, { y: -30, duration: 1.8, ease: 'power2.inOut' });
+
+      setTimeout(() => {
+        const overlay = document.getElementById('hire-intake-overlay');
+        overlay.classList.add('active');
+        renderHireStep(hireState.step || 0);
+      }, 900);
+    }
+
+    function exitHireIntake() {
+      const overlay = document.getElementById('hire-intake-overlay');
+      overlay.classList.remove('active');
+
+      gsap.killTweensOf(camera.position);
+
+      gsap.to(cardsGroup.position, { y: 0, duration: 1.8, ease: 'power2.out' });
+      gsap.to(leftUniverse.position, { y: 0.8, duration: 1.8, ease: 'power2.out' });
+      gsap.to(rightUniverse.position, { y: 0.8, duration: 1.8, ease: 'power2.out' });
+
+      const targetZ = portalsZ + 12;
+      gsap.to(camera.position, {
+        x: 0,
+        y: 0,
+        z: targetZ,
+        duration: 2.2,
+        ease: 'power3.out',
+        onUpdate: () => {
+          targetCameraX = 0;
+          targetCameraY = 0;
+          targetCameraZ = camera.position.z;
+        },
+        onComplete: () => {
+          targetCameraZ = targetZ;
+          targetCameraX = 0;
+          targetCameraY = 0;
+        }
+      });
+
+      gsap.to('.hud', { opacity: 1, pointerEvents: 'auto', duration: 1.0 });
+
+      isHireActive = false;
+      hireState.isOpen = false;
+    }
+
+    document.getElementById('hire-btn-cancel').addEventListener('click', exitHireIntake);
+
+    function getFollowUpConfig(type) {
+      switch (type) {
+        case 'Website':
+          return {
+            type: 'choice',
+            title: 'WHAT KIND OF WEBSITE DO YOU NEED?',
+            prompt: 'Choose the profile that matches your digital objective:',
+            options: [
+              'Portfolio / personal brand',
+              'Business / company',
+              'Landing page',
+              'E-commerce',
+              'Community / content',
+              'Other'
+            ]
+          };
+        case 'Web application':
+          return {
+            type: 'text',
+            title: 'WHAT SHOULD PEOPLE DO WITH THE APP?',
+            prompt: 'Describe core functionality, key user workflows, or integrations:',
+            placeholder: 'E.g., Users log in to configure 3D assets, share collaborative links, and run export workflows...'
+          };
+        case '3D / immersive experience':
+          return {
+            type: 'choice',
+            title: 'WHAT KIND OF EXPERIENCE ARE YOU IMAGINING?',
+            prompt: 'Choose the closest visual paradigm:',
+            options: [
+              'Interactive 3D website',
+              'Digital world / environment',
+              'Product visualization',
+              'Creative experiment',
+              'Other'
+            ]
+          };
+        case 'AI-powered tool':
+          return {
+            type: 'text',
+            title: 'WHAT ROLE SHOULD AI PLAY IN THE PRODUCT?',
+            prompt: 'Explain the generative, predictive, or automated layer:',
+            placeholder: 'E.g., Automated data clustering, natural language generation, semantic search, or smart assistants...'
+          };
+        case 'Other / not sure yet':
+        default:
+          return {
+            type: 'text',
+            title: 'WHAT IS THE MAIN PROBLEM TO SOLVE?',
+            prompt: 'Explain the core hurdle or desired outcome:',
+            placeholder: 'E.g., We need a memorable visual identity and high-impact digital presence to stand out...'
+          };
+      }
+    }
+
+    function renderHireStep(step) {
+      hireState.step = step;
+      const tracker = document.getElementById('hire-step-tracker');
+      const content = document.getElementById('hire-content-area');
+      content.innerHTML = '';
+
+      if (step === 0) {
+        tracker.textContent = 'INITIATE // HIRE_US';
+        content.innerHTML = `
+          <h2 class="hire-title">LET'S BUILD <span>SOMETHING</span>.</h2>
+          <p class="hire-prompt">Tell us what you're imagining. We'll turn the idea into a clear project brief.</p>
+          <div class="hire-nav-actions">
+            <div></div>
+            <div class="hire-nav-right">
+              <button class="hire-btn" id="hire-intro-start">START TRANSMISSION &gt;</button>
+            </div>
+          </div>
+        `;
+        document.getElementById('hire-intro-start').addEventListener('click', () => {
+          renderHireStep(1);
+        });
+        return;
+      }
+
+      if (step >= 1 && step <= 7) {
+        tracker.textContent = `STEP 0${step} // 07`;
+      } else if (step === 8) {
+        tracker.textContent = 'TRANSMISSION // REVIEW';
+      }
+
+      if (step === 1) {
+        const options = [
+          'Website',
+          'Web application',
+          '3D / immersive experience',
+          'AI-powered tool',
+          'Other / not sure yet'
+        ];
+        content.innerHTML = `
+          <h2 class="hire-title">WHAT ARE WE <span>BUILDING</span>?</h2>
+          <p class="hire-prompt">Select the foundational architecture for your project:</p>
+          <div class="hire-choice-grid grid-2" id="hire-type-grid" role="radiogroup" aria-label="Project Type">
+            ${options.map(opt => `
+              <button class="hire-option-card ${hireState.projectType === opt ? 'selected' : ''}" data-val="${opt}" role="radio" aria-checked="${hireState.projectType === opt}">
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+          <div class="hire-inline-error" id="hire-step-error"></div>
+          <div class="hire-nav-actions">
+            <div class="hire-nav-left">
+              <button class="hire-btn secondary" id="hire-btn-back">&lt; BACK</button>
+            </div>
+            <div class="hire-nav-right">
+              <button class="hire-btn" id="hire-btn-next">CONTINUE &gt;</button>
+            </div>
+          </div>
+        `;
+
+        const cards = content.querySelectorAll('#hire-type-grid .hire-option-card');
+        cards.forEach(card => {
+          card.addEventListener('click', () => {
+            const chosen = card.getAttribute('data-val');
+            if (hireState.projectType !== chosen) {
+              hireState.projectType = chosen;
+              hireState.followUp = '';
+            }
+            cards.forEach(c => {
+              c.classList.remove('selected');
+              c.setAttribute('aria-checked', 'false');
+            });
+            card.classList.add('selected');
+            card.setAttribute('aria-checked', 'true');
+            document.getElementById('hire-step-error').textContent = '';
+          });
+        });
+
+        document.getElementById('hire-btn-back').addEventListener('click', () => renderHireStep(0));
+        document.getElementById('hire-btn-next').addEventListener('click', () => {
+          if (!hireState.projectType) {
+            document.getElementById('hire-step-error').textContent = '[ ERROR: PLEASE SELECT A PROJECT ARCHITECTURE TO PROCEED ]';
+            return;
+          }
+          renderHireStep(2);
+        });
+      }
+
+      else if (step === 2) {
+        content.innerHTML = `
+          <h2 class="hire-title">TELL US ABOUT <span>THE IDEA</span>.</h2>
+          <p class="hire-prompt">What do you want to build, and what should it accomplish?</p>
+          <div class="hire-input-group">
+            <textarea class="hire-textarea" id="hire-desc-input" maxlength="3000" placeholder="Type your project overview, core objectives, and user needs here...">${hireState.description || ''}</textarea>
+            <div class="hire-meta-row">
+              <span class="hire-inline-error" id="hire-step-error"></span>
+              <span id="hire-char-count">${(hireState.description || '').length} / 3000</span>
+            </div>
+          </div>
+          <div class="hire-nav-actions">
+            <div class="hire-nav-left">
+              <button class="hire-btn secondary" id="hire-btn-back">&lt; BACK</button>
+            </div>
+            <div class="hire-nav-right">
+              <button class="hire-btn" id="hire-btn-next">CONTINUE &gt;</button>
+            </div>
+          </div>
+        `;
+
+        const textarea = document.getElementById('hire-desc-input');
+        const counter = document.getElementById('hire-char-count');
+        const errEl = document.getElementById('hire-step-error');
+
+        textarea.addEventListener('input', () => {
+          hireState.description = textarea.value;
+          counter.textContent = `${textarea.value.length} / 3000`;
+          if (textarea.value.trim().length > 0) errEl.textContent = '';
+        });
+
+        document.getElementById('hire-btn-back').addEventListener('click', () => {
+          hireState.description = textarea.value;
+          renderHireStep(1);
+        });
+
+        document.getElementById('hire-btn-next').addEventListener('click', () => {
+          const val = textarea.value.trim();
+          if (val.length === 0) {
+            errEl.textContent = '[ ERROR: PROJECT DESCRIPTION IS REQUIRED TO PROCEED ]';
+            textarea.focus();
+            return;
+          }
+          hireState.description = val;
+          renderHireStep(3);
+        });
+
+        textarea.focus();
+      }
+
+      else if (step === 3) {
+        const config = getFollowUpConfig(hireState.projectType);
+        if (config.type === 'choice') {
+          content.innerHTML = `
+            <h2 class="hire-title">${config.title}</h2>
+            <p class="hire-prompt">${config.prompt}</p>
+            <div class="hire-choice-grid grid-2" id="hire-follow-grid" role="radiogroup" aria-label="Follow-up Choice">
+              ${config.options.map(opt => `
+                <button class="hire-option-card ${hireState.followUp === opt ? 'selected' : ''}" data-val="${opt}" role="radio" aria-checked="${hireState.followUp === opt}">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+            <div class="hire-inline-error" id="hire-step-error"></div>
+            <div class="hire-nav-actions">
+              <div class="hire-nav-left">
+                <button class="hire-btn secondary" id="hire-btn-back">&lt; BACK</button>
+              </div>
+              <div class="hire-nav-right">
+                <button class="hire-btn" id="hire-btn-next">CONTINUE &gt;</button>
+              </div>
+            </div>
+          `;
+
+          const cards = content.querySelectorAll('#hire-follow-grid .hire-option-card');
+          cards.forEach(card => {
+            card.addEventListener('click', () => {
+              hireState.followUp = card.getAttribute('data-val');
+              cards.forEach(c => {
+                c.classList.remove('selected');
+                c.setAttribute('aria-checked', 'false');
+              });
+              card.classList.add('selected');
+              card.setAttribute('aria-checked', 'true');
+              document.getElementById('hire-step-error').textContent = '';
+            });
+          });
+
+          document.getElementById('hire-btn-back').addEventListener('click', () => renderHireStep(2));
+          document.getElementById('hire-btn-next').addEventListener('click', () => {
+            if (!hireState.followUp) {
+              document.getElementById('hire-step-error').textContent = '[ ERROR: PLEASE SELECT AN OPTION TO PROCEED ]';
+              return;
+            }
+            renderHireStep(4);
+          });
+        } else {
+          content.innerHTML = `
+            <h2 class="hire-title">${config.title}</h2>
+            <p class="hire-prompt">${config.prompt}</p>
+            <div class="hire-input-group">
+              <textarea class="hire-textarea" id="hire-follow-text" maxlength="2000" placeholder="${config.placeholder}">${hireState.followUp || ''}</textarea>
+              <div class="hire-meta-row">
+                <span class="hire-inline-error" id="hire-step-error"></span>
+                <span id="hire-char-count">${(hireState.followUp || '').length} / 2000</span>
+              </div>
+            </div>
+            <div class="hire-nav-actions">
+              <div class="hire-nav-left">
+                <button class="hire-btn secondary" id="hire-btn-back">&lt; BACK</button>
+              </div>
+              <div class="hire-nav-right">
+                <button class="hire-btn" id="hire-btn-next">CONTINUE &gt;</button>
+              </div>
+            </div>
+          `;
+
+          const textarea = document.getElementById('hire-follow-text');
+          const counter = document.getElementById('hire-char-count');
+          const errEl = document.getElementById('hire-step-error');
+
+          textarea.addEventListener('input', () => {
+            hireState.followUp = textarea.value;
+            counter.textContent = `${textarea.value.length} / 2000`;
+            if (textarea.value.trim().length > 0) errEl.textContent = '';
+          });
+
+          document.getElementById('hire-btn-back').addEventListener('click', () => {
+            hireState.followUp = textarea.value;
+            renderHireStep(2);
+          });
+
+          document.getElementById('hire-btn-next').addEventListener('click', () => {
+            const val = textarea.value.trim();
+            if (val.length === 0) {
+              errEl.textContent = '[ ERROR: PLEASE PROVIDE DETAILS TO PROCEED ]';
+              textarea.focus();
+              return;
+            }
+            hireState.followUp = val;
+            renderHireStep(4);
+          });
+
+          textarea.focus();
+        }
+      }
+
+      else if (step === 4) {
+        const timelines = [
+          'ASAP',
+          'Within 2–4 weeks',
+          'Within 1–3 months',
+          'Flexible / exploring'
+        ];
+        content.innerHTML = `
+          <h2 class="hire-title">WHEN DO YOU WANT TO <span>LAUNCH</span>?</h2>
+          <p class="hire-prompt">Select your desired target timeline (planning estimate):</p>
+          <div class="hire-choice-grid grid-2" id="hire-time-grid" role="radiogroup" aria-label="Timeline Choice">
+            ${timelines.map(t => `
+              <button class="hire-option-card ${hireState.timeline === t ? 'selected' : ''}" data-val="${t}" role="radio" aria-checked="${hireState.timeline === t}">
+                ${t}
+              </button>
+            `).join('')}
+          </div>
+          <div class="hire-inline-error" id="hire-step-error"></div>
+          <div class="hire-nav-actions">
+            <div class="hire-nav-left">
+              <button class="hire-btn secondary" id="hire-btn-back">&lt; BACK</button>
+            </div>
+            <div class="hire-nav-right">
+              <button class="hire-btn" id="hire-btn-next">CONTINUE &gt;</button>
+            </div>
+          </div>
+        `;
+
+        const cards = content.querySelectorAll('#hire-time-grid .hire-option-card');
+        cards.forEach(card => {
+          card.addEventListener('click', () => {
+            hireState.timeline = card.getAttribute('data-val');
+            cards.forEach(c => {
+              c.classList.remove('selected');
+              c.setAttribute('aria-checked', 'false');
+            });
+            card.classList.add('selected');
+            card.setAttribute('aria-checked', 'true');
+            document.getElementById('hire-step-error').textContent = '';
+          });
+        });
+
+        document.getElementById('hire-btn-back').addEventListener('click', () => renderHireStep(3));
+        document.getElementById('hire-btn-next').addEventListener('click', () => {
+          if (!hireState.timeline) {
+            document.getElementById('hire-step-error').textContent = '[ ERROR: PLEASE SELECT A TARGET TIMELINE TO PROCEED ]';
+            return;
+          }
+          renderHireStep(5);
+        });
+      }
+
+      else if (step === 5) {
+        const budgets = [
+          'Under ₹10,000',
+          '₹10,000–₹30,000',
+          '₹30,000–₹75,000',
+          '₹75,000+',
+          'Not sure yet',
+          'Prefer not to say'
+        ];
+        content.innerHTML = `
+          <h2 class="hire-title">DO YOU HAVE A <span>BUDGET</span> IN MIND?</h2>
+          <p class="hire-prompt">Select an optional planning range (this is exploratory, not a quotation):</p>
+          <div class="hire-choice-grid grid-2" id="hire-budget-grid" role="radiogroup" aria-label="Budget Choice">
+            ${budgets.map(b => `
+              <button class="hire-option-card ${hireState.budget === b ? 'selected' : ''}" data-val="${b}" role="radio" aria-checked="${hireState.budget === b}">
+                ${b}
+              </button>
+            `).join('')}
+          </div>
+          <div class="hire-inline-error" id="hire-step-error"></div>
+          <div class="hire-nav-actions">
+            <div class="hire-nav-left">
+              <button class="hire-btn secondary" id="hire-btn-back">&lt; BACK</button>
+              <button class="hire-btn secondary" id="hire-btn-skip">SKIP</button>
+            </div>
+            <div class="hire-nav-right">
+              <button class="hire-btn" id="hire-btn-next">CONTINUE &gt;</button>
+            </div>
+          </div>
+        `;
+
+        const cards = content.querySelectorAll('#hire-budget-grid .hire-option-card');
+        cards.forEach(card => {
+          card.addEventListener('click', () => {
+            hireState.budget = card.getAttribute('data-val');
+            cards.forEach(c => {
+              c.classList.remove('selected');
+              c.setAttribute('aria-checked', 'false');
+            });
+            card.classList.add('selected');
+            card.setAttribute('aria-checked', 'true');
+          });
+        });
+
+        document.getElementById('hire-btn-back').addEventListener('click', () => renderHireStep(4));
+        document.getElementById('hire-btn-skip').addEventListener('click', () => {
+          hireState.budget = '';
+          renderHireStep(6);
+        });
+        document.getElementById('hire-btn-next').addEventListener('click', () => renderHireStep(6));
+      }
+
+      else if (step === 6) {
+        content.innerHTML = `
+          <h2 class="hire-title">WHAT SHOULD WE <span>CALL YOU</span>?</h2>
+          <p class="hire-prompt">Enter your name or preferred identification (optional):</p>
+          <div class="hire-input-group">
+            <input type="text" class="hire-input" id="hire-name-input" maxlength="60" placeholder="Your name or designation..." value="${hireState.name || ''}" autocomplete="off">
+            <div class="hire-meta-row">
+              <span></span>
+              <span id="hire-char-count">${(hireState.name || '').length} / 60</span>
+            </div>
+          </div>
+          <div class="hire-nav-actions">
+            <div class="hire-nav-left">
+              <button class="hire-btn secondary" id="hire-btn-back">&lt; BACK</button>
+              <button class="hire-btn secondary" id="hire-btn-skip">SKIP</button>
+            </div>
+            <div class="hire-nav-right">
+              <button class="hire-btn" id="hire-btn-next">CONTINUE &gt;</button>
+            </div>
+          </div>
+        `;
+
+        const nameInput = document.getElementById('hire-name-input');
+        const counter = document.getElementById('hire-char-count');
+
+        nameInput.addEventListener('input', () => {
+          hireState.name = nameInput.value;
+          counter.textContent = `${nameInput.value.length} / 60`;
+        });
+
+        document.getElementById('hire-btn-back').addEventListener('click', () => {
+          hireState.name = nameInput.value.trim();
+          renderHireStep(5);
+        });
+
+        document.getElementById('hire-btn-skip').addEventListener('click', () => {
+          hireState.name = '';
+          renderHireStep(7);
+        });
+
+        document.getElementById('hire-btn-next').addEventListener('click', () => {
+          hireState.name = nameInput.value.trim();
+          renderHireStep(7);
+        });
+
+        nameInput.focus();
+      }
+
+      else if (step === 7) {
+        content.innerHTML = `
+          <h2 class="hire-title">WHERE CAN WE <span>REACH YOU</span>?</h2>
+          <p class="hire-prompt">Enter your return email address to prefill the contact transmission (optional):</p>
+          <div class="hire-input-group">
+            <input type="email" class="hire-input" id="hire-email-input" maxlength="100" placeholder="your.frequency@domain.com" value="${hireState.email || ''}" autocomplete="off">
+            <div class="hire-meta-row">
+              <span class="hire-inline-error" id="hire-step-error"></span>
+              <span>USED ONLY TO PREFILL TRANSMISSION</span>
+            </div>
+          </div>
+          <div class="hire-nav-actions">
+            <div class="hire-nav-left">
+              <button class="hire-btn secondary" id="hire-btn-back">&lt; BACK</button>
+              <button class="hire-btn secondary" id="hire-btn-skip">SKIP</button>
+            </div>
+            <div class="hire-nav-right">
+              <button class="hire-btn" id="hire-btn-next">REVIEW BRIEF &gt;</button>
+            </div>
+          </div>
+        `;
+
+        const emailInput = document.getElementById('hire-email-input');
+        const errEl = document.getElementById('hire-step-error');
+
+        emailInput.addEventListener('input', () => {
+          hireState.email = emailInput.value;
+          errEl.textContent = '';
+        });
+
+        const validateEmail = (val) => {
+          if (!val) return true;
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+        };
+
+        document.getElementById('hire-btn-back').addEventListener('click', () => {
+          hireState.email = emailInput.value.trim();
+          renderHireStep(6);
+        });
+
+        document.getElementById('hire-btn-skip').addEventListener('click', () => {
+          hireState.email = '';
+          renderHireStep(8);
+        });
+
+        document.getElementById('hire-btn-next').addEventListener('click', () => {
+          const val = emailInput.value.trim();
+          if (val.length > 0 && !validateEmail(val)) {
+            errEl.textContent = '[ ERROR: PLEASE ENTER A VALID EMAIL FORMAT (OR CLICK SKIP) ]';
+            emailInput.focus();
+            return;
+          }
+          hireState.email = val;
+          renderHireStep(8);
+        });
+
+        emailInput.focus();
+      }
+
+      else if (step === 8) {
+        renderHireSummary();
+      }
+    }
+
+    function buildProjectBriefText() {
+      return [
+        `===========================================`,
+        `      VOID // PROJECT INTAKE BRIEF         `,
+        `===========================================`,
+        `PROJECT TYPE:`,
+        `  ${hireState.projectType || 'Not specified'}`,
+        ``,
+        `DESCRIPTION:`,
+        `  ${hireState.description || 'Not specified'}`,
+        ``,
+        `FOCUS / FOLLOW-UP DETAILS:`,
+        `  ${hireState.followUp || 'Not specified'}`,
+        ``,
+        `TIMELINE:`,
+        `  ${hireState.timeline || 'Flexible / exploring'}`,
+        ``,
+        `BUDGET RANGE:`,
+        `  ${hireState.budget || 'Not specified / Skip'}`,
+        ``,
+        `CLIENT NAME:`,
+        `  ${hireState.name || 'Anonymous Voyager'}`,
+        ``,
+        `RETURN EMAIL:`,
+        `  ${hireState.email || 'Not provided'}`,
+        `===========================================`
+      ].join('\n');
+    }
+
+    function renderHireSummary() {
+      const content = document.getElementById('hire-content-area');
+      content.innerHTML = `
+        <h2 class="hire-title">TRANSMISSION <span>READY</span>.</h2>
+        <p class="hire-prompt">Review your project brief before sending it. You can edit any parameter below.</p>
+        
+        <div class="hire-summary-list" role="region" aria-label="Project Brief Details">
+          <div class="hire-summary-item">
+            <div class="hire-summary-data">
+              <span class="hire-summary-label">01 // Project Type</span>
+              <span class="hire-summary-val">${hireState.projectType || 'Not specified'}</span>
+            </div>
+            <button class="hire-summary-edit-btn" data-edit="1" aria-label="Edit project type">EDIT</button>
+          </div>
+
+          <div class="hire-summary-item">
+            <div class="hire-summary-data">
+              <span class="hire-summary-label">02 // Description</span>
+              <span class="hire-summary-val">${hireState.description || 'Not specified'}</span>
+            </div>
+            <button class="hire-summary-edit-btn" data-edit="2" aria-label="Edit description">EDIT</button>
+          </div>
+
+          <div class="hire-summary-item">
+            <div class="hire-summary-data">
+              <span class="hire-summary-label">03 // Specifications</span>
+              <span class="hire-summary-val">${hireState.followUp || 'Not specified'}</span>
+            </div>
+            <button class="hire-summary-edit-btn" data-edit="3" aria-label="Edit specifications">EDIT</button>
+          </div>
+
+          <div class="hire-summary-item">
+            <div class="hire-summary-data">
+              <span class="hire-summary-label">04 // Target Timeline</span>
+              <span class="hire-summary-val">${hireState.timeline || 'Flexible'}</span>
+            </div>
+            <button class="hire-summary-edit-btn" data-edit="4" aria-label="Edit timeline">EDIT</button>
+          </div>
+
+          <div class="hire-summary-item">
+            <div class="hire-summary-data">
+              <span class="hire-summary-label">05 // Budget Range</span>
+              <span class="hire-summary-val">${hireState.budget || 'Not specified / Skip'}</span>
+            </div>
+            <button class="hire-summary-edit-btn" data-edit="5" aria-label="Edit budget">EDIT</button>
+          </div>
+
+          <div class="hire-summary-item">
+            <div class="hire-summary-data">
+              <span class="hire-summary-label">06 // Client Name</span>
+              <span class="hire-summary-val">${hireState.name || 'Anonymous Voyager'}</span>
+            </div>
+            <button class="hire-summary-edit-btn" data-edit="6" aria-label="Edit name">EDIT</button>
+          </div>
+
+          <div class="hire-summary-item">
+            <div class="hire-summary-data">
+              <span class="hire-summary-label">07 // Contact Email</span>
+              <span class="hire-summary-val">${hireState.email || 'Not provided'}</span>
+            </div>
+            <button class="hire-summary-edit-btn" data-edit="7" aria-label="Edit email">EDIT</button>
+          </div>
+        </div>
+
+        <div class="hire-copy-feedback" id="hire-copy-feedback"></div>
+
+        <div class="hire-nav-actions">
+          <div class="hire-nav-left">
+            <button class="hire-btn secondary" id="hire-btn-copy">COPY BRIEF</button>
+            <button class="hire-btn secondary" id="hire-btn-finish-return">RETURN TO VOID</button>
+          </div>
+          <div class="hire-nav-right">
+            <button class="hire-btn" id="hire-btn-send">SEND PROJECT BRIEF &gt;</button>
+          </div>
+        </div>
+      `;
+
+      content.querySelectorAll('.hire-summary-edit-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const stepToEdit = parseInt(btn.getAttribute('data-edit'), 10);
+          renderHireStep(stepToEdit);
+        });
+      });
+
+      document.getElementById('hire-btn-copy').addEventListener('click', () => {
+        const brief = buildProjectBriefText();
+        const feedback = document.getElementById('hire-copy-feedback');
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(brief).then(() => {
+            feedback.className = 'hire-copy-feedback success';
+            feedback.textContent = '[ BRIEF COPIED TO SYSTEM CLIPBOARD ]';
+          }).catch(() => {
+            fallbackCopyText(brief, feedback);
+          });
+        } else {
+          fallbackCopyText(brief, feedback);
+        }
+      });
+
+      document.getElementById('hire-btn-send').addEventListener('click', () => {
+        const subject = encodeURIComponent(`VOID Project Inquiry — ${hireState.projectType || 'Project Brief'}`);
+        const body = encodeURIComponent(buildProjectBriefText());
+        window.open(`mailto:${HIRE_RECIPIENT_EMAIL}?subject=${subject}&body=${body}`, '_blank');
+      });
+
+      document.getElementById('hire-btn-finish-return').addEventListener('click', exitHireIntake);
+    }
+
+    function fallbackCopyText(text, feedbackEl) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        feedbackEl.className = 'hire-copy-feedback success';
+        feedbackEl.textContent = '[ BRIEF COPIED VIA FALLBACK BUFFER ]';
+      } catch (err) {
+        feedbackEl.className = 'hire-copy-feedback fallback';
+        feedbackEl.textContent = '[ CLIPBOARD ACCESS BLOCKED: PLEASE SELECT & COPY MANUALLY ]';
+      }
     }
 
     // Wire Contact Form submissions
@@ -2635,10 +3819,8 @@
       const bodyContent = `Sender: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
       const body = encodeURIComponent(bodyContent);
 
-      // Trigger mail client transmission in a new tab
       window.open(`mailto:${recipient}?subject=${subject}&body=${body}`, '_blank');
         
-      // Begin cinematic final dissolution phase immediately
       playDissolveTransition(name);
     });
 
@@ -2649,15 +3831,12 @@
       requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      // Smooth camera interpolation
       camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetCameraZ, 0.06);
       camera.position.x = THREE.MathUtils.lerp(camera.position.x, targetCameraX, 0.06);
       camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetCameraY, 0.06);
 
-      // Smoothly update prompt based on camera depth
       updateScrollPrompt(camera.position.z);
 
-      // Spin Universe Visual Systems
       leftUniverse.rotation.y += 0.005;
       blueCore.rotation.y -= 0.008;
       blueRing.rotation.z += 0.012;
@@ -2668,19 +3847,17 @@
       redCage.rotation.y -= 0.01;
       rightParticles.rotation.y -= 0.002;
 
-      // Update shader uniforms
       cardsGroup.children.forEach(card => {
         if (card.material.uniforms) {
           card.material.uniforms.uTime.value = elapsedTime;
         }
       });
 
-      // Ambient drift on starfield dust particles
       const positions = dustGeometry.attributes.position.array;
       for (let i = 2; i < positions.length; i += 3) {
-        positions[i] += dustSpeeds[(i-2)/3]; // Slowly push forward
+        positions[i] += dustSpeeds[(i-2)/3];
         if (positions[i] > firstZ + 15) {
-          positions[i] = -320; // Wrap around relative to extended deep voyage boundary
+          positions[i] = -320;
         }
       }
       dustGeometry.attributes.position.needsUpdate = true;
@@ -2692,7 +3869,6 @@
 
     animate();
 
-    // Responsive Canvas Resizing
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
